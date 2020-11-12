@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+<form id='login' action='/login' method='post' accept-charset='UTF-8' style='text-align: center'>
+    <fieldset style='display: inline-block;text-align: center'>
+        <legend>Login</legend>
+        <input type='password' name='password' id='password' maxlength='20' style='width: 120px; margin-bottom: 5px'/><br>
+        <input type='submit' name='Login' value='Login' style='width: 120px;'/>
+    </fieldset>
+</form>
+{% endblock %}

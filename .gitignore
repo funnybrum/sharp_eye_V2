@@ -1,0 +1,9 @@
+*.pyc
+.idea/
+tests/*.txt
+venv
+env
+src/resources/cert.pem
+src/resources/key.pem
+src/resources/smtp.yaml
+src/resources/secrets.yaml

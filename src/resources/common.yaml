@@ -1,0 +1,34 @@
+extend: secrets.yaml
+
+motion:
+    # timeout for retrieving frame
+    snapshot_timeout: 5
+    # two conditions, if both are true - alarm
+    dc_pixels: 300
+    dc_percent: 10
+    # single condition - alarm on true
+    sc_pixels: 2000
+    # not sure exactly what...
+    threshold: 64
+    history: 16
+    # snapshot history settings
+    snapshot_history: partial
+    snapshot_history_location: /tmp
+
+tmp_folder: /tmp
+
+smtp:
+    server: smtp.gmail.com
+    port: 587
+    user: IN_SECRETS_YAML
+    password: IN_SECRETS_YAML
+    sender: Sharp Eye
+    recipient: IN_SECRETS_YAML
+
+camera1:
+    name: Camera 1
+    active: True
+    snapshot: /tmp/cam1.bmp
+    stream_uri: IN_SECRETS_YAML
+    mask: resources/img/cam1_mask.png
+    command: "APP_CONFIG=./resources/cam1.yaml python3 md.py"

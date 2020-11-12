@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+    {% for cam in config.cameras %}
+        <fieldset style='width: 150px; text-align: center;'>
+            <legend>{{ config[cam].name }}</legend>
+            <p>Is enabled: {{ state[cam].active }}</p>
+            {% if state[cam].active %}
+                <form action="/disarm/{{cam}}">
+                    <input type="submit" value="Deactivate" style="width: 120px;">
+                </form>
+            {% else %}
+                <form action="/arm/{{cam}}">
+                    <input type="submit" value="Activate" style="width: 120px;">
+                </form>
+            {% endif %}
+            <form action="/view/{{cam}}">
+                <input type="submit" value="Snapshot" style="width: 120px;">
+            </form>
+        </fieldset>
+        <br>
+    {% endfor %}
+    <br>
+    <fieldset style='width: 150px;text-align: center'>
+        <legend>Logout</legend>
+        <form action="/logout">
+            <input type="submit" value="Logout" style="width: 120px;">
+        </form>
+    </fieldset>
+{% endblock %}

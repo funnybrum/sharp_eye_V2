@@ -1,0 +1,4 @@
+extend: common.yaml
+
+identifier: camera1
+
