@@ -142,7 +142,7 @@ class RtspCamera(object):
         if not img_fd:
             log("Time: %s, FAIL" % round(time.time() - start, 2))
             return None
-        log("Time: %s, OK, %s" % (round(time.time() - start, 2), len(img_fd.getvalue())))
+        # log("Time: %s, OK, %s" % (round(time.time() - start, 2), len(img_fd.getvalue())))
         img_array = numpy.fromstring(img_fd.getvalue(), dtype=numpy.uint8)
         result = cv2.imdecode(img_array, flags=cv2.IMREAD_UNCHANGED)
         return result

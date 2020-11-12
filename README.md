@@ -6,7 +6,7 @@ Sharp eye is a basic surveillance system. If captures snapshots from cameras, an
 
 Runs in a Docker container on x86 machine. Frames are extracted from video stream and frame rate can be up to tens of snapshots per second.
 
-This is V2. V1 is available [here](github.com/funnybrum/sharp_eye). It was running on Raspberry Pi 2 and was designed for constraint system resources.
+This is V2. V1 is available [here](github.com/funnybrum/sharp_eye). It was running on Raspberry Pi 2 and was designed for constrained system resources.
 
 ## Architecture
 The application is running inside an Ubnutu based Docker container. There are multiple Python3 processes running inside:
@@ -52,7 +52,7 @@ The common.yaml should provide all required details for the emails. The followin
 
 ## Running the surveilance system
 Build the docker container image (./docker/docker_build.sh) and run it:
-`docker run  -p 8080:8080 --tmpfs /tmp sharp_eye`
+`docker run  -p 192.168.0.200:8080:8080 --tmpfs /tmp sharp_eye`
 
 Note that the /tmp folder by default is set for keeping the snapshots too. It is recommended to reconfigure the snapshot history location () and put it on a permanent storage. The snapshot history location is provided in the config files - `snapshot_history_location`.
 
