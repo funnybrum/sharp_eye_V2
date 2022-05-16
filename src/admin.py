@@ -1,3 +1,8 @@
+# Temporary, for test purposes
+import os
+if not os.environ.get('APP_CONFIG'):
+    os.environ['APP_CONFIG'] = '/brum/dev/sharp_eye/src/resources/admin.yaml'
+
 from admin.server import Server
 import admin.supervisor as supervisor
 from lib.quicklock import lock
