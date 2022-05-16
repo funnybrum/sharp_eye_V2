@@ -4,10 +4,10 @@ motion:
     # timeout for retrieving frame
     snapshot_timeout: 5
     # two conditions, if both are true - alarm
-    dc_pixels: 300
-    dc_percent: 10
+    dc_pixels: 3
+    dc_percent: 1
     # single condition - alarm on true
-    sc_pixels: 2000
+    sc_pixels: 3
     # not sure exactly what...
     threshold: 64
     history: 16

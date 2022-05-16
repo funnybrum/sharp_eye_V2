@@ -52,7 +52,7 @@ The common.yaml should provide all required details for the emails. The followin
 
 ## Running the surveilance system
 Build the docker container image (./docker/docker_build.sh) and run it:
-`docker run  -p 192.168.0.200:8080:8080 --tmpfs /tmp sharp_eye`
+`docker run -d --name=sharp_eye -p 192.168.0.200:8080:8080 --tmpfs /tmp sharp_eye`
 
 Note that the /tmp folder by default is set for keeping the snapshots too. It is recommended to reconfigure the snapshot history location () and put it on a permanent storage. The snapshot history location is provided in the config files - `snapshot_history_location`.
 
