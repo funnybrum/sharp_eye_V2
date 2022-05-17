@@ -9,7 +9,7 @@ motion:
     # single condition - alarm on true
     sc_pixels: 3
     # not sure exactly what...
-    threshold: 64
+    threshold: 32
     history: 16
     # snapshot history settings
     snapshot_history: partial
@@ -30,5 +30,13 @@ camera1:
     active: True
     snapshot: /tmp/cam1.bmp
     stream_uri: IN_SECRETS_YAML
-    mask: resources/img/cam1_mask.png
+    mask: resources/img/no_mask.png
     command: "APP_CONFIG=./resources/cam1.yaml python3 md.py"
+
+camera2:
+    name: Camera 2
+    active: True
+    snapshot: /tmp/cam2.bmp
+    stream_uri: IN_SECRETS_YAML
+    mask: resources/img/no_mask.png
+    command: "APP_CONFIG=./resources/cam2.yaml python3 md.py"
