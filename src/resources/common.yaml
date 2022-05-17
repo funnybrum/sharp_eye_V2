@@ -13,7 +13,7 @@ motion:
     history: 16
     # snapshot history settings
     snapshot_history: partial
-    snapshot_history_location: /tmp
+    snapshot_history_location: /snapshots
 
 tmp_folder: /tmp
 
