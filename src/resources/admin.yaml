@@ -10,4 +10,6 @@ port: 8080
 #ssl_pass: SSL_KEY_PASSWORD
 
 password: IN_SECRETS_YAML
-cameras: ['camera1']
+cameras:
+  - camera1
+  - camera2
