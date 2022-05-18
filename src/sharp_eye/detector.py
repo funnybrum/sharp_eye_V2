@@ -17,8 +17,8 @@ class MotionDetector(object):
     MOTION_THRESHOLD = config['motion']['threshold']
     MOTION_HISTORY = config['motion']['history']
 
-    _MOTION_IMAGE_WIDTH = 320
-    _MOTION_IMAGE_HEIGHT = 180
+    _MOTION_IMAGE_WIDTH = 480
+    _MOTION_IMAGE_HEIGHT = 270
 
     def __init__(self, camera, on_motion):
         """
