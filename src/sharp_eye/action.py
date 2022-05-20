@@ -24,4 +24,4 @@ def on_motion(motion_frame, snapshot, prev_snapshot, data):
         subject = 'Motion @ home'
         text = 'Got motion on %s' % config['identifier'] + '\n' + str(data)
 
-        # send_email(subject, text, [pf, f, mf])
+        send_email(subject, text, [pf, f, mf])
