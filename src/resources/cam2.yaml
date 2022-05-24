@@ -2,3 +2,5 @@ extend: common.yaml
 
 identifier: camera2
 
+motion:
+  mask: resources/img/cam2_mask.png

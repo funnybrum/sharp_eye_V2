@@ -32,7 +32,6 @@ camera1:
     active: True
     snapshot: /tmp/cam1.bmp
     stream_uri: IN_SECRETS_YAML
-    mask: resources/img/cam1_mask.png
     command: "APP_CONFIG=./resources/cam1.yaml python3 md.py"
 
 camera2:
@@ -40,5 +39,4 @@ camera2:
     active: True
     snapshot: /tmp/cam2.bmp
     stream_uri: IN_SECRETS_YAML
-    mask: resources/img/cam2_mask.png
     command: "APP_CONFIG=./resources/cam2.yaml python3 md.py"

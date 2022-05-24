@@ -143,7 +143,7 @@ class MotionDetector(object):
         return motion_mask, result
 
     def _get_frame_key(self):
-        return "%s-%s" % (datetime.now().strftime("%Y-%m-%d-%H-%M-"), self.frame_count)
+        return "%s-%s" % (datetime.now().strftime("%Y-%m-%d-%H-%M"), self.frame_count)
 
     def _save_frame(self, frame, motion_mask, motion_info):
         if config['motion']['snapshot_history'] == 'full':
