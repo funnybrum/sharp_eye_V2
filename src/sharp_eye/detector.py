@@ -43,6 +43,7 @@ class MotionDetector(object):
         self.last_no_motion = None
         self.last_motion = None
         self.consequent_motion_frames = 0
+        self.last_motion_frame = 0
         self.prev_frame = None
         self.frame_count = 0
         if 'mask' in config['motion']:
@@ -141,17 +142,22 @@ class MotionDetector(object):
 
         return motion_mask, result
 
+    def _get_frame_key(self):
+        return "%s-%s" % (datetime.now().strftime("%Y-%m-%d-%H-%M-"), self.frame_count)
+
     def _save_frame(self, frame, motion_mask, motion_info):
-            if config['motion']['snapshot_history'] == 'full':
-                # Write each frame on the drive
-                cv2.imwrite('%s/ff_%04d.jpg' % (self.snapshot_folder, self.frame_count), frame)
-            elif config['motion']['snapshot_history'] == 'partial' and motion_info['motion_detected']:
-                # Or in case of motion - save motion info on the drive
-                cv2.imwrite('%s/img_%04d.jpg' % (self.snapshot_folder, self.frame_count), motion_mask)
-                cv2.imwrite('%s/ff_%04d.jpg' % (self.snapshot_folder, self.frame_count), frame)
-                ff_info = open('%s/ff_%04d.txt' % (self.snapshot_folder, self.frame_count), 'w')
-                ff_info.write(str(motion_info))
-                ff_info.close
+        if config['motion']['snapshot_history'] == 'full':
+            # Write each frame on the drive
+            frame_key = self._get_frame_key()
+            cv2.imwrite('%s/ff_%s.jpg' % (self.snapshot_folder, frame_key), frame)
+        elif config['motion']['snapshot_history'] == 'partial' and motion_info['motion_detected']:
+            # Or in case of motion - save motion info on the drive
+            frame_key = self._get_frame_key()
+            cv2.imwrite('%s/img_%s.jpg' % (self.snapshot_folder, frame_key), motion_mask)
+            cv2.imwrite('%s/ff_%s.jpg' % (self.snapshot_folder, frame_key), frame)
+            ff_info = open('%s/ff_%s.txt' % (self.snapshot_folder, frame_key), 'w')
+            ff_info.write(str(motion_info))
+            ff_info.close
 
     def _get_motion_frame(self, frame, motion_mask, motion_info):
         motion_frame = self.resize(frame)
@@ -185,6 +191,11 @@ class MotionDetector(object):
         motion_mask, motion_info = self._process_mask(motion_mask)
 
         if motion_info['motion_detected']:
+            self.last_motion_frame = self.frame_count
+
+        ongoing_motion = self.frame_count - self.last_motion_frame <= config['motion']['min_no_motion_gap']
+
+        if motion_info['motion_detected'] or ongoing_motion:
             self.consequent_motion_frames += 1
             self.on_motion_callback(motion_frame=self._get_motion_frame(frame, motion_mask, motion_info),
                                     snapshot=frame,

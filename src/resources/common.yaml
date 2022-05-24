@@ -3,14 +3,16 @@ extend: secrets.yaml
 motion:
     # timeout for retrieving frame
     snapshot_timeout: 5
-    # two conditions, if both are true - alarm
+    # two conditions, if both are true then this is a motion
     dc_pixels: 3
     dc_percent: 1
-    # single condition - alarm on true
+    # single condition for detecting motion
     sc_pixels: 3
-    # not sure exactly what...
-    threshold: 32
-    history: 16
+    # CV2 motion detection settings
+    threshold: 32  # threshold to apply for motion detection
+    history: 16    # number of frames to look back
+    # no-motion gap for considering a motion end
+    min_no_motion_gap: 20
     # snapshot history settings
     snapshot_history: partial
     snapshot_history_location: /snapshots
@@ -30,7 +32,7 @@ camera1:
     active: True
     snapshot: /tmp/cam1.bmp
     stream_uri: IN_SECRETS_YAML
-    mask: resources/img/no_mask.png
+    mask: resources/img/cam1_mask.png
     command: "APP_CONFIG=./resources/cam1.yaml python3 md.py"
 
 camera2:
@@ -38,5 +40,5 @@ camera2:
     active: True
     snapshot: /tmp/cam2.bmp
     stream_uri: IN_SECRETS_YAML
-    mask: resources/img/no_mask.png
+    mask: resources/img/cam2_mask.png
     command: "APP_CONFIG=./resources/cam2.yaml python3 md.py"

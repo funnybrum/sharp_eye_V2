@@ -30,7 +30,7 @@ class RtspCamera(object):
     The process is being monitored and will be restarted if it dies.
     """
 
-    STREAMING_COMMAND = "/usr/bin/ffmpeg -nostats -loglevel 0 -rtsp_transport tcp -i %s -y -r 4 %s/_%s_%%d.bmp"
+    STREAMING_COMMAND = "/usr/bin/ffmpeg -nostats -loglevel 0 -rtsp_transport tcp -i %s -y -r 2 %s/_%s_%%d.bmp"
 
     def __init__(self):
         """
