@@ -4,13 +4,13 @@ motion:
     # timeout for retrieving frame
     snapshot_timeout: 5
     # two conditions, if both are true then this is a motion
-    dc_pixels: 3
-    dc_percent: 1
+    dc_pixels: 0
+    dc_percent: 0
     # single condition for detecting motion
-    sc_pixels: 3
+    sc_pixels: 0
     # CV2 motion detection settings
-    threshold: 32  # threshold to apply for motion detection
-    history: 16    # number of frames to look back
+    threshold: 64  # threshold to apply for motion detection
+    history: 32    # number of frames to look back
     # no-motion gap for considering a motion end
     min_no_motion_gap: 20
     # snapshot history settings

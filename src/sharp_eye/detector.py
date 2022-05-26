@@ -12,7 +12,7 @@ class MotionDetector(object):
     Motion detection.
     """
 
-    MIN_MOTION_SIZE = (24, 24)
+    MIN_MOTION_SIZE = (4, 8)
     NOISE_FILTERING_RECT = (2, 3)
     MOTION_THRESHOLD = config['motion']['threshold']
     MOTION_HISTORY = config['motion']['history']
@@ -201,6 +201,7 @@ class MotionDetector(object):
                                     snapshot=frame,
                                     prev_snapshot=self.prev_frame,
                                     data={'frame_count': self.frame_count,
+                                          'motion_detected': motion_info['motion_detected'],
                                           'last_motion': self.last_motion,
                                           'last_no_motion': self.last_no_motion,
                                           'motion_length': self.consequent_motion_frames,
