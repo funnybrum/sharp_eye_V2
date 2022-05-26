@@ -42,10 +42,11 @@ class MotionDetector(object):
         self.on_motion_callback = on_motion
         self.last_no_motion = None
         self.last_motion = None
-        self.consequent_motion_frames = 0
+        self.motion_length = 0
         self.last_motion_frame = 0
         self.prev_frame = None
         self.frame_count = 0
+        self.consecutive_motion_frames = 0
         if 'mask' in config['motion']:
             self.mask = cv2.imread(config['motion']['mask'])
             self.mask = self.resize(self.mask)
@@ -192,11 +193,14 @@ class MotionDetector(object):
 
         if motion_info['motion_detected']:
             self.last_motion_frame = self.frame_count
+            self.consecutive_motion_frames += 1
+        else:
+            self.consecutive_motion_frames = 0
 
         ongoing_motion = self.frame_count - self.last_motion_frame <= config['motion']['min_no_motion_gap']
 
         if motion_info['motion_detected'] or ongoing_motion:
-            self.consequent_motion_frames += 1
+            self.motion_length += 1
             self.on_motion_callback(motion_frame=self._get_motion_frame(frame, motion_mask, motion_info),
                                     snapshot=frame,
                                     prev_snapshot=self.prev_frame,
@@ -204,14 +208,15 @@ class MotionDetector(object):
                                           'motion_detected': motion_info['motion_detected'],
                                           'last_motion': self.last_motion,
                                           'last_no_motion': self.last_no_motion,
-                                          'motion_length': self.consequent_motion_frames,
+                                          'motion_length': self.motion_length,
+                                          'consecutive_motion_frames': self.consecutive_motion_frames,
                                           'non_zero_pixels': motion_info['non_zero_pixels'],
                                           'non_zero_percent': motion_info['non_zero_percent'],
                                           'motion_rect': (motion_info['w'],
                                                           motion_info['h'])})
             self.last_motion = datetime.now()
         else:
-            self.consequent_motion_frames = 0
+            self.motion_length = 0
             self.last_no_motion = datetime.now()
 
         self.prev_frame = frame

@@ -13,6 +13,8 @@ motion:
     history: 32    # number of frames to look back
     # no-motion gap for considering a motion end
     min_no_motion_gap: 20
+    # minimum number of consecutive motion frames to consider this as a real motion
+    min_motion_length: 3
     # snapshot history settings
     snapshot_history: partial
     snapshot_history_location: /snapshots
