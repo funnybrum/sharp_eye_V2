@@ -20,13 +20,13 @@ class MotionDetector(object):
     _MOTION_IMAGE_WIDTH = 480
     _MOTION_IMAGE_HEIGHT = 270
 
-    def __init__(self, camera, on_motion):
+    def __init__(self, camera, event_tracker):
         """
         Create motion detector.
         :param camera: camera to be used for getting snapshots
-        :param on_motion: function to be called if motion is detected
+        :param event_tracker: event tracker object
         """
-        if not camera or not on_motion:
+        if not camera or not event_tracker:
             raise AssertionError('Invalid parameters')
 
         if 'snapshot_history' in config['motion']:
@@ -39,14 +39,9 @@ class MotionDetector(object):
                                                            detectShadows=True)
 
         self.camera = camera
-        self.on_motion_callback = on_motion
-        self.last_no_motion = None
-        self.last_motion = None
-        self.motion_length = 0
-        self.last_motion_frame = 0
+        self.event_tracker = event_tracker
         self.prev_frame = None
         self.frame_count = 0
-        self.consecutive_motion_frames = 0
         if 'mask' in config['motion']:
             self.mask = cv2.imread(config['motion']['mask'])
             self.mask = self.resize(self.mask)
@@ -79,18 +74,18 @@ class MotionDetector(object):
         frame = self.camera.snapshot_img()
         self.frame_count += 1
 
-        if frame is not None and self._validate_image(frame):
+        if frame is not None:
             return frame
 
-    def _validate_image(self, img):
-        # Check if the image is defective. We get such images where a given line is repeated till
-        # the end of the image. This triggers false alarm. So we compare the last two lines of the
-        # array and if they are the same - this is defective image.
-        height = img.shape[0]
-        result = not (img[height-2] == img[height-3]).all()
-        if not result:
-            log("Detected image with defect")
-        return result
+    # def _validate_image(self, img):
+    #     # Check if the image is defective. We get such images where a given line is repeated till
+    #     # the end of the image. This triggers false alarm. So we compare the last two lines of the
+    #     # array and if they are the same - this is defective image.
+    #     height = img.shape[0]
+    #     result = not (img[height-2] == img[height-3]).all()
+    #     if not result:
+    #         log("Detected image with defect")
+    #     return result
 
     def _process_frame(self, frame):
         processed_frame = self.resize(frame)
@@ -102,7 +97,6 @@ class MotionDetector(object):
 
         processed_frame = cv2.merge((B, G, R))
         processed_frame = cv2.cvtColor(processed_frame, cv2.COLOR_BGR2GRAY)
-        # processed_frame = cv2.equalizeHist(processed_frame)
 
         # apply the mask that marks the motion detection region
         if self.mask is not None:
@@ -134,7 +128,7 @@ class MotionDetector(object):
 
         if w >= self.MIN_MOTION_SIZE[0] and h >= self.MIN_MOTION_SIZE[1]:
             # static condition, avoid sudden light changes, img size is 320 x 180
-            if w > 310 and h > 170 and non_zero_percent < 7:
+            if w > 470 and h > 260 and non_zero_percent < 7:
                 pass
             elif non_zero_pixels > config['motion']['dc_pixels'] and non_zero_percent > config['motion']['dc_percent']:
                 result['motion_detected'] = True
@@ -180,7 +174,7 @@ class MotionDetector(object):
 
     def check_next_frame(self):
         """
-        Check if moiton is detected. If so - calls the on_motion callback.
+        Check if motion is detected. If so - invoke the event tracker.
         :return: True iff motion is detected, False otherwise.
         """
         frame = self._get_frame()
@@ -192,32 +186,13 @@ class MotionDetector(object):
         motion_mask, motion_info = self._process_mask(motion_mask)
 
         if motion_info['motion_detected']:
-            self.last_motion_frame = self.frame_count
-            self.consecutive_motion_frames += 1
-        else:
-            self.consecutive_motion_frames = 0
-
-        ongoing_motion = self.frame_count - self.last_motion_frame <= config['motion']['min_no_motion_gap']
-
-        if motion_info['motion_detected'] or ongoing_motion:
-            self.motion_length += 1
-            self.on_motion_callback(motion_frame=self._get_motion_frame(frame, motion_mask, motion_info),
-                                    snapshot=frame,
-                                    prev_snapshot=self.prev_frame,
-                                    data={'frame_count': self.frame_count,
-                                          'motion_detected': motion_info['motion_detected'],
-                                          'last_motion': self.last_motion,
-                                          'last_no_motion': self.last_no_motion,
-                                          'motion_length': self.motion_length,
-                                          'consecutive_motion_frames': self.consecutive_motion_frames,
-                                          'non_zero_pixels': motion_info['non_zero_pixels'],
-                                          'non_zero_percent': motion_info['non_zero_percent'],
-                                          'motion_rect': (motion_info['w'],
-                                                          motion_info['h'])})
-            self.last_motion = datetime.now()
-        else:
-            self.motion_length = 0
-            self.last_no_motion = datetime.now()
+            self.event_tracker.on_motion(motion_frame=self._get_motion_frame(frame, motion_mask, motion_info),
+                                         snapshot=frame,
+                                         prev_snapshot=self.prev_frame,
+                                         data={'frame_count': self.frame_count,
+                                               'non_zero_pixels': motion_info['non_zero_pixels'],
+                                               'non_zero_percent': motion_info['non_zero_percent'],
+                                               'motion_rect': (motion_info['w'], motion_info['h'])})
 
         self.prev_frame = frame
         self._save_frame(frame, motion_mask, motion_info)

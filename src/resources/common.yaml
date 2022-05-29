@@ -11,15 +11,19 @@ motion:
     # CV2 motion detection settings
     threshold: 64  # threshold to apply for motion detection
     history: 32    # number of frames to look back
-    # no-motion gap for considering a motion end
-    min_no_motion_gap: 20
-    # minimum number of consecutive motion frames to consider this as a real motion
-    min_motion_length: 3
     # snapshot history settings
     snapshot_history: partial
     snapshot_history_location: /snapshots
 
 tmp_folder: /tmp
+
+event_tracker:
+    # no-motion gap for splitting motion frame series to events
+    min_no_motion_gap: 20
+    # conditions to validating motion on series of motion detection events
+    history_frame_count: 10
+    motion_events_threshold: 5
+
 
 smtp:
     server: smtp.gmail.com
