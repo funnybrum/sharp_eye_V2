@@ -46,3 +46,10 @@ camera2:
     snapshot: /tmp/cam2.bmp
     stream_uri: IN_SECRETS_YAML
     command: "APP_CONFIG=./resources/cam2.yaml python3 md.py"
+
+camera3:
+    name: Camera 3
+    active: True
+    snapshot: /tmp/cam3.bmp
+    stream_uri: IN_SECRETS_YAML
+    command: "APP_CONFIG=./resources/cam3.yaml python3 md.py"

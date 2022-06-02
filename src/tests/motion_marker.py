@@ -2,58 +2,63 @@ from __future__ import absolute_import
 
 import cv2
 import os
+import ast
+import csv
 
 from fnmatch import fnmatch
 
 
-CAM = 2
-DAY = 0
-IMAGES_DIR = '/media/brum/storage/snapshots/camera%s/' % CAM
-MOTION_MASK = '/media/brum/dev/python/projects/surveillance/resources/cam%s_mask.png' % CAM
-MOTION_INFO_FILE = 'data_d%s_c%s.txt' % (DAY, CAM)
-MOTION_MASK = cv2.imread('/media/brum/dev/python/projects/surveillance/resources/cam%s_mask.png' % CAM)
-MOTION_MASK = cv2.resize(MOTION_MASK, (0, 0), fx=0.25, fy=0.25)
-MOTION_MASK = cv2.cvtColor(MOTION_MASK, cv2.COLOR_BGR2GRAY)
+CAM = 1
+IMAGES_DIR = '/media/brum/b2478a80-d995-4ab3-8521-e4599cc787a4/sharp_eye/camera%s/' % CAM
+MOTION_INFO_FILE = 'data_c%s.txt' % CAM
+
 
 def save(data):
     with open(MOTION_INFO_FILE, 'w') as out_file:
-        for key in sorted(data):
-            out_file.write(key + ':' + str(data[key]) + '\n')
-
+        writer = csv.DictWriter(
+            out_file,
+            fieldnames=['real_motion', 'non_zero_pixels', 'non_zero_percent', 'w', 'h', 'file'],
+            extrasaction='ignore')
+        writer.writeheader()
+        for key in data:
+            row = data[key]
+            row['file'] = key
+            writer.writerow(row)
 
 def load():
     data = {}
-    with open(MOTION_INFO_FILE, 'r') as in_file:
-        for line in in_file:
-            line = line.rstrip()
-            tokens = line.split(':')
-            data[tokens[0]] = 'True' == tokens[1]
-
+    # with open(MOTION_INFO_FILE, 'r') as in_file:
+    #     for line in in_file:
+    #         line = line.rstrip()
+    #         tokens = line.split(':')
+    #         data[tokens[0]] = 'True' == tokens[1]
+    #
     return data
 
 
 def process_images(data):
-    image_files = []
-    for image_file in sorted(os.listdir(IMAGES_DIR)):
-        if fnmatch(image_file, 'frame*jpg'):
-            image_files.append(image_file)
+    image_files = os.listdir(IMAGES_DIR)
+    image_files = [x for x in image_files if "ff_2022" in x and "jpg" in x]
+    image_files = sorted(image_files, key=lambda x: int(x.split('-')[-1][:-4]))
 
     index = 0
     while index < len(image_files):
         image_file = image_files[index]
 
-        if image_file in data:
-            index += 1
-        else:
-            break
-
-    while index < len(image_files):
-        image_file = image_files[index]
-
         image = cv2.imread(IMAGES_DIR + image_file)
-        image = cv2.bitwise_and(image, image, mask=MOTION_MASK)
+        with open(IMAGES_DIR + image_file[:-3] + 'txt', "r") as f:
+            img_data = ast.literal_eval(f.read())
         cv2.putText(image, image_file, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (128, 255, 128), 2)
-        cv2.imshow('image', cv2.resize(image, (0, 0), fx=2, fy=2))
+
+        x = int(img_data['x'] * 4)
+        y = int(img_data['y'] * 4)
+        w = int(img_data['w'] * 4)
+        h = int(img_data['h'] * 4)
+
+        cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
+
+        cv2.imshow('image', cv2.resize(image, (0, 0), fx=0.5, fy=0.5))
+
         char = cv2.waitKey(0)
 
         processed = False
@@ -61,12 +66,15 @@ def process_images(data):
         while not processed:
             if ord('u') == char:
                 processed = True
-                motion = None
+                motion = "undef"
             if ord('y') == char:
                 processed = True
-                motion = True
+                motion = "yes"
             if ord('n') == char:
-                processed = True
+                processed = "no"
+                motion = False
+            if ord('c') == char:
+                processed = "cat"
                 motion = False
             if ord('p') == char:
                 index -= 2
@@ -75,7 +83,8 @@ def process_images(data):
                 index += 10000
                 processed = True
         index += 1
-        data[image_file] = motion
+        data[image_file] = img_data
+        data[image_file]["real_motion"] = motion
         if index % 20 == 0:
             save(data)
 

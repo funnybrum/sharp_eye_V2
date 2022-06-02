@@ -13,3 +13,4 @@ password: IN_SECRETS_YAML
 cameras:
   - camera1
   - camera2
+  - camera3

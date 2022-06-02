@@ -1,0 +1,6 @@
+extend: common.yaml
+
+identifier: camera3
+
+motion:
+  mask: resources/img/cam3_mask.png
