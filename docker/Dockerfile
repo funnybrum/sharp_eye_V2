@@ -8,7 +8,9 @@ RUN apt-get update && \
     apt-get -y install python3 python3-pip && \
     apt-get -y install python3-opencv && \
     apt-get -y install ffmpeg && \
-    apt-get -y install tzdata
+    apt-get -y install tzdata && \
+    apt-get -y install curl && \
+    apt-get -y install nano
 
 # Cron setup
 ADD docker/crontab /etc/cron.d/schedule
