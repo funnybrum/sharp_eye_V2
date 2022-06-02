@@ -4,3 +4,6 @@ identifier: camera1
 
 motion:
   mask: resources/img/cam1_mask.png
+
+automation:
+  on_motion_frame_script: /sharp-eye/scripts/cam1_on_motion.sh

@@ -1,5 +1,6 @@
 from lib import config
 
+import subprocess
 
 class EventTracker(object):
     """
@@ -20,6 +21,9 @@ class EventTracker(object):
         self.lookback_motion_threshold = config['event_tracker']['motion_events_threshold']
 
     def on_motion(self, motion_frame, snapshot, prev_snapshot, data):
+        if 'automation' in config and 'on_motion_frame_script' in config['automation']:
+            subprocess.Popen([config['automation']['on_motion_frame_script']], shell=True)
+
         if data['frame_count'] - self.motion_history[-1] > self.min_no_motion_gap:
             # This is a new motion sequence.
             self.motion_history = [data['frame_count']]
