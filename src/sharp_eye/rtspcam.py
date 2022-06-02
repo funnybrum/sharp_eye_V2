@@ -1,7 +1,6 @@
 import cv2
 import numpy
 import os
-import pathlib
 import re
 import shutil
 import time
@@ -45,14 +44,17 @@ class RtspCamera(object):
             config['identifier']
         )
 
-        self.tmp_file_re = re.compile(self.streaming_command.split(' ')[-1].replace('%d.', '.*'))
+        self.tmp_file_re = re.compile(self.streaming_command
+                                      .split(' ')[-1]
+                                      .replace('%d.', '.*')
+                                      .replace(config['tmp_folder'] + "/", ""))
         self.streaming_process_name = None
         self.streaming_process_pid = None
         self._start_streaming()
 
     def _clean_temp_files(self):
-        files = sorted(pathlib.Path(config['tmp_folder']).iterdir(), key=os.path.getmtime)
-        files = [str(f) for f in files if self.tmp_file_re.match(str(f))]
+        files = os.listdir(config['tmp_folder'])
+        files = [config['tmp_folder'] + "/" + f for f in files if self.tmp_file_re.match(str(f))]
         for f in files:
             os.remove(f)
 
@@ -100,10 +102,12 @@ class RtspCamera(object):
             self._restart_streaming()
 
     def _get_oldest_snapshot(self):
-        files = sorted(pathlib.Path(config['tmp_folder']).iterdir(), key=os.path.getmtime)
-        files = [str(f) for f in files if self.tmp_file_re.match(str(f))]
+        files = os.listdir(config['tmp_folder'])
+        files = [f for f in files if self.tmp_file_re.match(str(f))]
+        files = sorted(files, key=lambda f: int(f.split("_")[-1][:-4]))
+
         if files and len(files) > 1:
-            return files[0]
+            return config['tmp_folder'] + '/' + files[0]
 
     def _get_snapshot(self, timeout):
         """
