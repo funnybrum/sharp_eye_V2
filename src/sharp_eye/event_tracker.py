@@ -2,6 +2,7 @@ from lib import config
 
 import subprocess
 
+
 class EventTracker(object):
     """
     Combine multiple frames in an event. Based on the event specifics decide if this is a motion event that should

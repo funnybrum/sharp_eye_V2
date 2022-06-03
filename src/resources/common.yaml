@@ -15,6 +15,14 @@ motion:
     snapshot_history: partial
     snapshot_history_location: /snapshots
 
+snapshots:
+    # frame - record every frame
+    # motion_frame - record only frames with detected motion in them
+    # motion_sequence_frame - record only frames that are part of motion sequences
+    type: partial
+    location: /snapshots
+
+
 tmp_folder: /tmp
 
 event_tracker:
@@ -53,3 +61,10 @@ camera3:
     snapshot: /tmp/cam3.bmp
     stream_uri: IN_SECRETS_YAML
     command: "APP_CONFIG=./resources/cam3.yaml python3 md.py"
+
+camera4:
+    name: Camera 4
+    active: True
+    snapshot: /tmp/cam4.bmp
+    stream_uri: IN_SECRETS_YAML
+    command: "APP_CONFIG=./resources/cam4.yaml python3 md.py"
