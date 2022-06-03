@@ -112,6 +112,9 @@ class MotionDetector(object):
         motion_mask = cv2.erode(motion_mask, erode_kernel, iterations=1)
 
         x, y, w, h = cv2.boundingRect(motion_mask)
+        # TODO - move to multiple contours
+        # contours, _ = cv2.findContours(motion_mask, mode=cv2.RETR_EXTERNAL, method=cv2.CHAIN_APPROX_SIMPLE)^M
+        # import pdb; pdb.set_trace()^
         non_zero_pixels = cv2.countNonZero(motion_mask)
         if w > 0 and h > 0:
             non_zero_percent = (non_zero_pixels * 100) / (w * h)

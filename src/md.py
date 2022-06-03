@@ -1,7 +1,7 @@
 # Temporary, for test purposes
 import os
 if not os.environ.get('APP_CONFIG'):
-    os.environ['APP_CONFIG'] = '/brum/dev/sharp_eye/src/resources/cam1.yaml'
+    os.environ['APP_CONFIG'] = '/brum/dev/sharp_eye/src/resources/cam3.yaml'
 
 from lib.quicklock import lock
 from sharp_eye.action import alert
