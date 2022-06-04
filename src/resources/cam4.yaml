@@ -5,5 +5,5 @@ identifier: camera4
 motion:
   mask: resources/img/cam4_mask.png
 
-automation:
-  on_motion_frame_script: /sharp_eye/scripts/cam3_on_motion.sh
+#automation:
+#  on_motion_frame_script: /sharp_eye/scripts/cam3_on_motion.sh

@@ -5,21 +5,21 @@ from lib import config
 from lib.tools import send_email
 
 
-def alert(motion_frame, snapshot, prev_snapshot, data):
+def alert(frame):
     """
     Callback for sending an alert.
     """
     mf = {
-        'data': BytesIO(cv2.imencode('.jpg', motion_frame)[1].tostring()),
+        'data': BytesIO(cv2.imencode('.jpg', cv2.resize(frame.get_motion_frame(), (0, 0), fx=0.25, fy=0.25))[1].tostring()),
         'name': 'motion.jpg'}
     f = {
-        'data': BytesIO(cv2.imencode('.jpg', cv2.resize(snapshot, (0, 0), fx=0.25, fy=0.25))[1].tostring()),
+        'data': BytesIO(cv2.imencode('.jpg', cv2.resize(frame.frame, (0, 0), fx=0.5, fy=0.5))[1].tostring()),
         'name': 'snapshot.jpg'}
     pf = {
-        'data': BytesIO(cv2.imencode('.jpg', cv2.resize(prev_snapshot, (0, 0), fx=0.25, fy=0.25))[1].tostring()),
+        'data': BytesIO(cv2.imencode('.jpg', cv2.resize(frame.prev_frame, (0, 0), fx=0.5, fy=0.5))[1].tostring()),
         'name': 'prev_snapshot.jpg'}
 
     subject = 'Motion @ home'
-    text = 'Got motion on %s' % config['identifier'] + '\n' + str(data)
+    text = 'Got motion on %s' % config['identifier'] + '\n' + str(frame.get_metadata())
 
     send_email(subject, text, [mf, f, pf])

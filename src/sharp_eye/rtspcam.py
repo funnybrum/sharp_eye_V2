@@ -86,10 +86,13 @@ class RtspCamera(object):
         except Exception as e:
             log('Failed to run RTSP client: %s' % repr(e))
 
-    def _restart_streaming(self):
+    def _kill_streaming(self):
         log("Streaming process - killing")
         kill(self.streaming_process_pid)
         self.streaming_process_pid = None
+
+    def _restart_streaming(self):
+        self._kill_streaming()
         self._start_streaming()
 
     def _verify_streaming(self, force_restart=False):
@@ -151,3 +154,7 @@ class RtspCamera(object):
         img_array = numpy.fromstring(img_fd.getvalue(), dtype=numpy.uint8)
         result = cv2.imdecode(img_array, flags=cv2.IMREAD_UNCHANGED)
         return result
+
+    def stop(self):
+        self._kill_streaming()
+        self._clean_temp_files()

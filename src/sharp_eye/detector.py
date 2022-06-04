@@ -1,10 +1,8 @@
 import cv2
-import os
-
-from datetime import datetime
 
 from lib.lib import log
 from lib import config
+from sharp_eye.frame import Frame
 
 
 class MotionDetector(object):
@@ -20,7 +18,7 @@ class MotionDetector(object):
     _MOTION_IMAGE_WIDTH = 480
     _MOTION_IMAGE_HEIGHT = 270
 
-    def __init__(self, camera, event_tracker):
+    def __init__(self, camera, event_tracker, snapshot_tracker):
         """
         Create motion detector.
         :param camera: camera to be used for getting snapshots
@@ -29,17 +27,13 @@ class MotionDetector(object):
         if not camera or not event_tracker:
             raise AssertionError('Invalid parameters')
 
-        if 'snapshot_history' in config['motion']:
-            self.snapshot_folder = os.path.join(config['motion']['snapshot_history_location'], config['identifier'])
-            if not os.path.exists(self.snapshot_folder):
-                os.mkdir(self.snapshot_folder)
-
         self.detector = cv2.createBackgroundSubtractorMOG2(history=self.MOTION_HISTORY,
                                                            varThreshold=self.MOTION_THRESHOLD,
                                                            detectShadows=True)
 
         self.camera = camera
         self.event_tracker = event_tracker
+        self.snapshot_tracker = snapshot_tracker
         self.prev_frame = None
         self.frame_count = 0
         if 'mask' in config['motion']:
@@ -57,17 +51,18 @@ class MotionDetector(object):
 
     def run(self):
         """Start the motion detection loop."""
+        try:
+            while True:
+                try:
+                    motion = self.check_next_frame()
+                except Exception as e:
+                    log('Got exception: %s' % repr(e))
+                    motion = None
 
-        while True:
-            try:
-                motion = self.check_next_frame()
-            except Exception as e:
-                log('Got exception: %s' % repr(e))
-                motion = None
-
-            if (motion is not False) or \
-               ('debug' in config and config['debug']):
-                log('Camera "%s", frame %s, motion: %s' % (config['identifier'], self.frame_count, motion))
+                if motion is not False:
+                    log('Camera "%s", frame %s, motion: %s' % (config['identifier'], self.frame_count, motion))
+        except:  # noqa
+            self.camera.stop
 
     def _get_frame(self):
         """Get a frame from the camera and validate it. Returns the frame iff valid, None otherwise"""
@@ -140,41 +135,6 @@ class MotionDetector(object):
 
         return motion_mask, result
 
-    def _get_frame_key(self):
-        return "%s-%s" % (datetime.now().strftime("%Y-%m-%d-%H-%M"), self.frame_count)
-
-    def _save_frame(self, frame, motion_mask, motion_info):
-        if config['motion']['snapshot_history'] == 'full':
-            # Write each frame on the drive
-            frame_key = self._get_frame_key()
-            cv2.imwrite('%s/ff_%s.jpg' % (self.snapshot_folder, frame_key), frame)
-        elif config['motion']['snapshot_history'] == 'partial' and motion_info['motion_detected']:
-            # Or in case of motion - save motion info on the drive
-            frame_key = self._get_frame_key()
-            cv2.imwrite('%s/img_%s.jpg' % (self.snapshot_folder, frame_key), motion_mask)
-            cv2.imwrite('%s/ff_%s.jpg' % (self.snapshot_folder, frame_key), frame)
-            ff_info = open('%s/ff_%s.txt' % (self.snapshot_folder, frame_key), 'w')
-            ff_info.write(str(motion_info))
-            ff_info.close
-
-    def _get_motion_frame(self, frame, motion_mask, motion_info):
-        motion_frame = self.resize(frame)
-        # Draw green rect around the motion, *2 because the mask is 1/2 of the motion_frame that we are creating
-        # Seems I've changed the moiton frame size, the *2 looks no-longer needed as the motion_frame is the same size
-        # as the motion mask.
-        x = int(motion_info['x'])
-        y = int(motion_info['y'])
-        w = int(motion_info['w'])
-        h = int(motion_info['h'])
-
-        cv2.rectangle(motion_frame, (x, y), (x + w, y + h), (0, 255, 0), 3)
-
-        if 'debug' in config and config['debug']:
-            # add the motion detection mask
-            motion_mask = cv2.resize(motion_mask, (0, 0), fx=0.5, fy=0.5)
-            motion_frame[270:360, 480:640] = cv2.cvtColor(motion_mask, cv2.COLOR_GRAY2RGB)
-        return motion_frame
-
     def check_next_frame(self):
         """
         Check if motion is detected. If so - invoke the event tracker.
@@ -188,15 +148,18 @@ class MotionDetector(object):
         motion_mask = self.detector.apply(processed_frame)
         motion_mask, motion_info = self._process_mask(motion_mask)
 
-        if motion_info['motion_detected']:
-            self.event_tracker.on_motion(motion_frame=self._get_motion_frame(frame, motion_mask, motion_info),
-                                         snapshot=frame,
-                                         prev_snapshot=self.prev_frame,
-                                         data={'frame_count': self.frame_count,
-                                               'non_zero_pixels': motion_info['non_zero_pixels'],
-                                               'non_zero_percent': motion_info['non_zero_percent'],
-                                               'motion_rect': (motion_info['w'], motion_info['h'])})
+        frame_obj = Frame(
+            index=self.frame_count,
+            motion=motion_info['motion_detected'],
+            frame=frame,
+            prev_frame=self.prev_frame,
+            motion_mask=motion_mask,
+            non_zero_pixels=motion_info['non_zero_pixels'],
+            non_zero_percent=motion_info['non_zero_percent'],
+            motion_rect=(motion_info['w'], motion_info['h']),
+            motion_pos=(motion_info['x'], motion_info['y'])
+        )
 
+        self.event_tracker.track_frame(frame_obj)
         self.prev_frame = frame
-        self._save_frame(frame, motion_mask, motion_info)
-        return motion_info['motion_detected']
+        return frame_obj.motion

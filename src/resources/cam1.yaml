@@ -6,4 +6,4 @@ motion:
   mask: resources/img/cam1_mask.png
 
 automation:
-  on_motion_frame_script: /sharp_eye/scripts/cam1_on_motion.sh
+  on_motion_sequence_script: /sharp_eye/scripts/cam1_on_motion.sh

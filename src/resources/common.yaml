@@ -12,15 +12,19 @@ motion:
     threshold: 64  # threshold to apply for motion detection
     history: 32    # number of frames to look back
     # snapshot history settings
-    snapshot_history: partial
-    snapshot_history_location: /snapshots
 
 snapshots:
     # frame - record every frame
     # motion_frame - record only frames with detected motion in them
-    # motion_sequence_frame - record only frames that are part of motion sequences
-    type: partial
+    # motion_sequence - record only frames that are part of motion sequences
+    type: motion_sequence
+    # Location for snapshots. A subfolder named on the camera identifier will be created. I.e.
+    # /snapshots/camera3
     location: /snapshots
+    # Number of frames to keep as history. These has effect only in case of 'motion_sequence'. If
+    # the number is 10 this will result in getting snapshots for 10 frames before the motion
+    # start has been detected. Keep value to 1 in the other cases to reduce load.
+    history: 10
 
 
 tmp_folder: /tmp

@@ -58,8 +58,8 @@ REAL_DATA = load_motion_data()
 
 def init_config():
     config['motion']['mask'] = MOTION_MASK
-    config['motion']['snapshot_history'] = 'none'
     config['motion']['sc_pixels'] = 2
+    config['snapshot']['type'] = 'none'
 
 
 def get_frame_index_from_filename(fn):
