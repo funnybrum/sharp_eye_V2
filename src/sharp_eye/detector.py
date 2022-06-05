@@ -3,6 +3,7 @@ import cv2
 from lib.lib import log
 from lib import config
 from sharp_eye.frame import Frame
+import numpy
 
 
 class MotionDetector(object):
@@ -38,16 +39,23 @@ class MotionDetector(object):
         self.frame_count = 0
         if 'mask' in config['motion']:
             self.mask = cv2.imread(config['motion']['mask'])
-            self.mask = self.resize(self.mask)
+            self.mask = self.resize(self.mask, interpolation=cv2.INTER_NEAREST)
             self.mask = cv2.cvtColor(self.mask, cv2.COLOR_BGR2GRAY)
+            # Sanity check on the mask. It should be either one color [255] or
+            # two colors [0, 255].
+            mask_bytes = sorted(numpy.unique(self.mask))
+            if not mask_bytes == [0, 255] and not mask_bytes == [255]:
+                camera.stop()
+                raise RuntimeError("Invalid mask file. Expected just 0 and 255 "
+                                   "pixels, but got %s" % mask_bytes)
         else:
             self.mask = None
 
-    def resize(self, img, width=_MOTION_IMAGE_WIDTH, height=_MOTION_IMAGE_HEIGHT):
+    def resize(self, img, width=_MOTION_IMAGE_WIDTH, height=_MOTION_IMAGE_HEIGHT, interpolation=cv2.INTER_LINEAR):
         h, w, _ = img.shape
         fx = 1.0 * width / w
         fy = 1.0 * height / h
-        return cv2.resize(img, (0, 0), fx=fx, fy=fy)
+        return cv2.resize(img, (0, 0), fx=fx, fy=fy, interpolation=interpolation)
 
     def run(self):
         """Start the motion detection loop."""
