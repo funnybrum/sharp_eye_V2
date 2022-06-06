@@ -21,10 +21,10 @@ def check():
         should_be_running = cam_state['active']
         if is_running != should_be_running:
             if should_be_running:
-                log('arming %s' % cam)
+                log('Arming %s' % cam)
                 Popen(config[cam]['command'], shell=True)
             else:
-                log('disarming %s' % cam)
+                log('Disarming %s' % cam)
                 force_unlock(cam)
             sleep(5)
 

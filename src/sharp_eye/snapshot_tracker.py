@@ -48,7 +48,7 @@ class SnapshotTracker(object):
         for index in iter(self._frames):
             self._snapshot_files.append(self._save_frame(index))
 
-        if len(self._snapshot_files) >= 12:
+        if len(self._snapshot_files) >= 120:
             self._create_motion_video(True)
             self._snapshot_files = []
 
@@ -66,7 +66,7 @@ class SnapshotTracker(object):
         frame_key = "%s-%s" % (datetime.now().strftime("%Y-%m-%d-%H-%M"), frame_index)
         frame = self._frames[frame_index]
         snapshot_filename = '%s/%s.bmp' % (self._snapshot_folder, frame_key)
-        cv2.imwrite(snapshot_filename, frame.frame)
+        cv2.imwrite(snapshot_filename, frame.get_motion_frame())
         return snapshot_filename
 
     def _create_motion_video(self, partial):
