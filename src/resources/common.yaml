@@ -34,7 +34,7 @@ event_tracker:
     min_no_motion_gap: 20
     # conditions to validating motion on series of motion detection events
     history_frame_count: 10
-    motion_events_threshold: 5
+    motion_events_threshold: 6
 
 
 smtp:

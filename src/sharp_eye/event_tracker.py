@@ -62,7 +62,7 @@ class EventTracker(object):
             [x for x in self.motion_history if x > frame.index - self.lookback_frames]
         )
 
-        if motion_frames > self.lookback_motion_threshold:
+        if motion_frames >= self.lookback_motion_threshold:
             self._on_motion_sequence_actions()
             self.last_alert_sequence_start_frame = self.motion_history[0]
             self.alert_callback(frame)
