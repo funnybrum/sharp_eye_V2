@@ -10,9 +10,7 @@ class SnapshotTracker(object):
     def __init__(self):
         self._frames = {}
         self._history_length = config['snapshots']['history']
-        self._snapshot_folder = os.path.join(
-            config['snapshots']['location'],
-            config['identifier'])
+        self._snapshot_folder = os.path.join(config['tmp_folder'], config['identifier'])
         if not os.path.exists(self._snapshot_folder):
             os.mkdir(self._snapshot_folder)
 
@@ -25,7 +23,7 @@ class SnapshotTracker(object):
         if config['snapshots']['type'] != 'full':
             return
 
-        self._save_frame(frame.index, False)
+        self._save_frame(frame.index)
 
     def on_single_motion_frame(self):
         if config['snapshots']['type'] != 'motion_frame':
@@ -43,14 +41,11 @@ class SnapshotTracker(object):
 
         self._frames = {}
 
-    def _save_frame(self, frame_index, full_data=True):
+    def _save_frame(self, frame_index):
+        """
+        Persist a frame on the tmp file system. This will likely (depending on the config)
+        be used to create a motion video file later on.
+        """
         frame_key = "%s-%s" % (datetime.now().strftime("%Y-%m-%d-%H-%M"), frame_index)
         frame = self._frames[frame_index]
-        cv2.imwrite('%s/ff_%s.jpg' % (self._snapshot_folder, frame_key), frame.frame)
-
-        if not full_data:
-            return
-
-        cv2.imwrite('%s/mk_%s.jpg' % (self._snapshot_folder, frame_key), frame.motion_mask)
-        with open('%s/ff_%s.txt' % (self._snapshot_folder, frame_key), 'w') as ff_info:
-            ff_info.write(str(frame.get_metadata()))
+        cv2.imwrite('%s/ff_%s.bmp' % (self._snapshot_folder, frame_key), frame.frame)
