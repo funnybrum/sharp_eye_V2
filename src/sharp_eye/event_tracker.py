@@ -39,6 +39,11 @@ class EventTracker(object):
         if ongoing_motion:
             self._on_motion_sequence_actions()
 
+        if not frame.motion and frame.index - self.motion_history[-1] == self.min_no_motion_gap + 1:
+            # This is motion sequence end. Check if motion was detected.
+            if self.last_alert_sequence_start_frame == self.motion_history[0]:
+                self.snapshot_tracker.on_sequence_end()
+
         if not frame.motion:
             return
 
@@ -50,7 +55,7 @@ class EventTracker(object):
             self.motion_history.append(frame.index)
 
         if self.last_alert_sequence_start_frame == self.motion_history[0]:
-            # An alert was already sent for this sequence.
+            # An alert was already sent for this sequence. No remaining actions.
             return
 
         motion_frames = len(

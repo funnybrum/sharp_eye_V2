@@ -69,8 +69,9 @@ class MotionDetector(object):
 
                 if motion is not False:
                     log('Camera "%s", frame %s, motion: %s' % (config['identifier'], self.frame_count, motion))
-        except:  # noqa
-            self.camera.stop
+        except Exception as e:
+            self.camera.stop()
+            raise e
 
     def _get_frame(self):
         """Get a frame from the camera and validate it. Returns the frame iff valid, None otherwise"""
