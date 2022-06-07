@@ -1,5 +1,6 @@
 import cv2
 import os
+import shutil
 import threading
 import time
 
@@ -95,15 +96,37 @@ class SnapshotTracker(object):
                 for f in frame_files:
                     out.write("file '%s'\nduration 0.1\n" % f)
 
+            # Determine the usage of the temporary file system. If usage is high go with low quality
+            # video to speed up the process of reducing the usage. High usage will render the system
+            # non-working because there will be no space to store camera snapshots for processing.
+            total, used, _ = shutil.disk_usage('/tmp')
+            # Determine the current load. 0 is low load, 10 is highest possible.
+            load = int(10 * used / total)
+            preset_map = [
+                'medium',
+                'medium',
+                'medium',
+                'fast',
+                'fast',
+                'faster',
+                'veryfast',
+                'superfast',
+                'ultrafast',
+                'ultrafast',
+                'ultrafast'
+            ]
+            ffmpeg_preset = preset_map[load]
+
             # Create a video file using ffmpeg.
             # 10 fps, no console output, x265, crf 25 (default is 23), slow preset (default is slow).
             # Check https://trac.ffmpeg.org/wiki/Encode/H.264 and https://trac.ffmpeg.org/wiki/Encode/H.265
-            cmd = "/usr/bin/ffmpeg -nostats -loglevel 0 -y -safe 0 " \
+            cmd = "nice -n %d /usr/bin/ffmpeg -nostats -loglevel 0 -y -safe 0 " \
                   "-r 10 -i %s " \
-                  "-c:v libx265 -preset slow -crf 25 %s" % \
-                  (video_in_txt_file, output_file)
+                  "-c:v libx265 -preset %s -crf 25 %s" % \
+                  (8 - load, video_in_txt_file, ffmpeg_preset, output_file)
 
-            log("Creating motion video %s" % os.path.split(output_file)[-1])
+            log("Creating motion video %s with %s preset at nice level %d" %
+                (os.path.split(output_file)[-1]), ffmpeg_preset, 8 - load)
             start_time = time.time()
             dev_null = open(os.devnull, 'wb')
             Popen(cmd.split(' '), stdin=dev_null, stdout=dev_null, stderr=dev_null).wait()
