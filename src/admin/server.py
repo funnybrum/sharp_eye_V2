@@ -57,9 +57,19 @@ def requires_auth(f):
     """Wrapper for routes that requires auth."""
     @wraps(f)
     def decorated(*args, **kwargs):
-        if 'session_id' not in request.cookies or \
-           request.cookies['session_id'] != session_token:
+        global session_token
+        no_session_token = request.cookies.get('session_id') != session_token
+
+        print(no_session_token, request.args.get("key"))
+        if no_session_token and request.args.get("key") == config["secret_key"]:
+            session_token = generate_session_token()
+            response = make_response(redirect('/'))
+            response.set_cookie('session_id', value=session_token)
+            return response
+
+        if no_session_token:
             return login()
+
         return f(*args, **kwargs)
     return decorated
 

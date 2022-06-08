@@ -126,7 +126,7 @@ class SnapshotTracker(object):
                   (8 - load, video_in_txt_file, ffmpeg_preset, output_file)
 
             log("Creating motion video %s with %s preset at nice level %d" %
-                (os.path.split(output_file)[-1]), ffmpeg_preset, 8 - load)
+                (os.path.split(output_file)[-1], ffmpeg_preset, 8 - load))
             start_time = time.time()
             dev_null = open(os.devnull, 'wb')
             Popen(cmd.split(' '), stdin=dev_null, stdout=dev_null, stderr=dev_null).wait()
