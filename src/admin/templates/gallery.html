@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+    {% for date in content %}
+        <p>{{ date }}</p>
+        {% for item in content[date] %}
+            <a href="/movie/{{ item.path }}">{{ item.title }}, {{ item.size }}</a>
+            <br>
+        {% endfor %}
+        <p>--------------------------------------------</p>
+        <br>
+    {% endfor %}
+{% endblock %}

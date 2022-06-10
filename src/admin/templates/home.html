@@ -1,6 +1,13 @@
 {% extends "base.html" %}
 {% block content %}
-    {% for cam in config.cameras %}
+    <fieldset style='width: 150px;text-align: center'>
+        <legend>Galery</legend>
+        <form action="/gallery">
+            <input type="submit" value="Gallery" style="width: 120px;">
+        </form>
+    </fieldset>
+    <br>
+   {% for cam in config.cameras %}
         <fieldset style='width: 150px; text-align: center;'>
             <legend>{{ config[cam].name }}</legend>
             <p>Is enabled: {{ state[cam].active }}</p>
