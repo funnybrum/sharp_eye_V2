@@ -62,13 +62,14 @@ def get_gallery_items():
 
 
 @server_webapp.route('/gallery')
-# @requires_auth
+@requires_auth
 def gallery():
     data = get_gallery_items()
     return render_template('gallery.html', content=data)
 
 
 @server_webapp.route("/movie/<path:filename>", methods=["GET"])
+@requires_auth
 def movie(filename):
     movie_file = safe_join(config['snapshots']['location'], filename)
     return send_file(movie_file, as_attachment=True)
