@@ -3,13 +3,8 @@ import re
 
 from flask import (
     send_file,
-    abort,
     request,
-    redirect,
-    make_response,
-    current_app,
-    render_template,
-    send_from_directory
+    render_template
 )
 from werkzeug.utils import safe_join
 
@@ -68,8 +63,41 @@ def gallery():
     return render_template('gallery.html', content=data)
 
 
-@server_webapp.route("/movie/<path:filename>", methods=["GET"])
+@server_webapp.route("/movie/play/<path:filename>", methods=["GET"])
 @requires_auth
-def movie(filename):
+def play_movie(filename):
+    movie_file = safe_join(config['snapshots']['location'], filename)
+    headers = request.headers
+    if not "range" in headers:
+        return send_file(movie_file)
+
+    size = os.stat(movie_file)
+    size = size.st_size
+
+    chunk_size = 10**3
+    start = int(re.sub("\D", "", headers["range"]))
+    end = min(start + chunk_size, size - 1)
+
+    content_lenght = end - start + 1
+
+    def get_chunk(movie_file, start, end):
+        with open(movie_file, "rb") as f:
+            f.seek(start)
+            chunk = f.read(end)
+        return chunk
+
+    headers = {
+        "Content-Range": f"bytes {start}-{end}/{size}",
+        "Accept-Ranges": "bytes",
+        "Content-Length": content_lenght,
+        "Content-Type": "video/mp4",
+    }
+
+    return server_webapp.response_class(get_chunk(movie_file, start, end), 206, headers)
+
+
+@server_webapp.route("/movie/download/<path:filename>", methods=["GET"])
+@requires_auth
+def download_movie(filename):
     movie_file = safe_join(config['snapshots']['location'], filename)
     return send_file(movie_file, as_attachment=True)

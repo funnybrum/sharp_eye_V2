@@ -3,8 +3,10 @@
     {% for date in content %}
         <p>{{ date }}</p>
         {% for item in content[date] %}
-            <a href="/movie/{{ item.path }}">{{ item.title }}, {{ item.size }}</a>
-            <br>
+            {{ item.title }}, {{ item.size }}&nbsp;&nbsp;
+            <a href="/movie/download/{{ item.path }}"><img src="/static/download.png" width="24" height="24"></a>&nbsp;
+            <a href="/movie/play/{{ item.path }}"><img src="/static/play.png" width="24" height="24"></a>
+            <br><br>
         {% endfor %}
         <p>--------------------------------------------</p>
         <br>

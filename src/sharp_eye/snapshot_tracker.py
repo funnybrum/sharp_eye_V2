@@ -102,31 +102,31 @@ class SnapshotTracker(object):
             total, used, _ = shutil.disk_usage('/tmp')
             # Determine the current load. 0 is low load, 10 is highest possible.
             load = int(10 * used / total)
-            preset_map = [
-                'medium',
-                'medium',
-                'medium',
-                'fast',
-                'fast',
-                'faster',
-                'veryfast',
-                'superfast',
-                'ultrafast',
-                'ultrafast',
-                'ultrafast'
+            crf_map = [
+                '25',
+                '25',
+                '25',
+                '25',
+                '28',
+                '28',
+                '31',
+                '31',
+                '36',
+                '42',
+                '50'
             ]
-            ffmpeg_preset = preset_map[load]
+            crf_preset = crf_map[load]
 
-            # Create a video file using ffmpeg.
-            # 10 fps, no console output, x265, crf 25 (default is 23), slow preset (default is slow).
-            # Check https://trac.ffmpeg.org/wiki/Encode/H.264 and https://trac.ffmpeg.org/wiki/Encode/H.265
+            # Create a video file using ffmpeg. The output is 10fps (input is 2fps).
+            # The vp9 compression is used as it is free and plays in browsers (hevc/x265 doesn't).
+            # The CRF is used to control the encoding speed. With VP9 it has more effect than the presets.
             cmd = "nice -n %d /usr/bin/ffmpeg -nostats -loglevel 0 -y -safe 0 " \
                   "-r 10 -i %s " \
-                  "-c:v libx265 -preset %s -crf 25 %s" % \
-                  (8 - load, video_in_txt_file, ffmpeg_preset, output_file)
+                  "-c:v libvpx-vp9 -crf %s -b:v 0 -pix_fmt yuv420p %s" % \
+                  (8 - load, video_in_txt_file, crf_preset, output_file)
 
-            log("Creating motion video %s with %s preset at nice level %d" %
-                (os.path.split(output_file)[-1], ffmpeg_preset, 8 - load))
+            log("Creating motion video %s with crf %s at nice level %d" %
+                (os.path.split(output_file)[-1], crf_preset, 8 - load))
             start_time = time.time()
             dev_null = open(os.devnull, 'wb')
             Popen(cmd.split(' '), stdin=dev_null, stdout=dev_null, stderr=dev_null).wait()
@@ -136,7 +136,6 @@ class SnapshotTracker(object):
                 time.time() - start_time,
                 len(frame_files)
             ))
-
             os.remove(video_in_txt_file)
 
         # Remove the snapshots that were persisted for creating the motion video.
