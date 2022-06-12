@@ -24,7 +24,7 @@ snapshots:
     # Number of frames to keep as history. These has effect only in case of 'motion_sequence'. If
     # the number is 10 this will result in getting snapshots for 10 frames before the motion
     # start has been detected. Keep value to 1 in the other cases to reduce load.
-    history: 10
+    history: 15
 
 
 tmp_folder: /tmp

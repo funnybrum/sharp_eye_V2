@@ -87,7 +87,7 @@ class SnapshotTracker(object):
         if partial:
             frame_files = in_files
         else:
-            frame_files = in_files[:-int(0.9 * config['event_tracker']['min_no_motion_gap'])]
+            frame_files = in_files[:-int(0.5 * config['event_tracker']['min_no_motion_gap'])]
 
         if len(frame_files) > 0:
             # Prepare list of images to be converted to a video file

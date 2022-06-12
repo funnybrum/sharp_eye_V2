@@ -7,3 +7,6 @@ motion:
 
 automation:
   on_motion_sequence_script: /sharp_eye/scripts/cam3_on_motion.sh
+
+snapshot:
+  text: [ 0, 0, 0 ]

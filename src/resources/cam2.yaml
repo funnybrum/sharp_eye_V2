@@ -5,5 +5,8 @@ identifier: camera2
 motion:
   mask: resources/img/cam2_mask.png
 
-#automation:
-#  on_motion_frame_script: /sharp_eye/scripts/cam2_on_motion.sh
+automation:
+  on_motion_sequence_script: /sharp_eye/scripts/cam2_on_motion.sh
+
+snapshot:
+  text: [0, 0, 0]
