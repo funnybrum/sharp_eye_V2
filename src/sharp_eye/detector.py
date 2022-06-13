@@ -13,8 +13,6 @@ class MotionDetector(object):
 
     MIN_MOTION_SIZE = (4, 8)
     NOISE_FILTERING_RECT = (2, 3)
-    MOTION_THRESHOLD = config['motion']['threshold']
-    MOTION_HISTORY = config['motion']['history']
 
     _MOTION_IMAGE_WIDTH = 480
     _MOTION_IMAGE_HEIGHT = 270
@@ -28,9 +26,10 @@ class MotionDetector(object):
         if not camera or not event_tracker:
             raise AssertionError('Invalid parameters')
 
-        self.detector = cv2.createBackgroundSubtractorMOG2(history=self.MOTION_HISTORY,
-                                                           varThreshold=self.MOTION_THRESHOLD,
+        self.detector = cv2.createBackgroundSubtractorMOG2(history=config['motion']['history'],
+                                                           varThreshold=config['motion']['threshold'],
                                                            detectShadows=True)
+        self.detector.setBackgroundRatio(0.5)
 
         self.camera = camera
         self.event_tracker = event_tracker
@@ -93,13 +92,13 @@ class MotionDetector(object):
 
     def _process_frame(self, frame):
         processed_frame = self.resize(frame)
-        B, G, R = cv2.split(processed_frame)
-
-        R = cv2.equalizeHist(R)
-        B = cv2.equalizeHist(B)
-        G = cv2.equalizeHist(G)
-
-        processed_frame = cv2.merge((B, G, R))
+        # B, G, R = cv2.split(processed_frame)
+        #
+        # R = cv2.equalizeHist(R)
+        # B = cv2.equalizeHist(B)
+        # G = cv2.equalizeHist(G)
+        #
+        # processed_frame = cv2.merge((B, G, R))
         processed_frame = cv2.cvtColor(processed_frame, cv2.COLOR_BGR2GRAY)
 
         # apply the mask that marks the motion detection region
