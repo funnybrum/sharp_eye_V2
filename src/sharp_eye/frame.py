@@ -48,7 +48,7 @@ class Frame:
 
         cv2.rectangle(motion_frame, (x, y), (x + w, y + h), (0, 255, 0), 3)
 
-        stamp = "{:d} / {:.2f}".format(self.non_zero_pixels, self.non_zero_percent)
+        stamp = "{:d} / {:.2f} / {} / {}".format(self.non_zero_pixels, self.non_zero_percent, self.motion, self.index)
         color = (config['snapshot']['text'][0], config['snapshot']['text'][1], config['snapshot']['text'][2])
         cv2.putText(motion_frame, stamp, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2)
 

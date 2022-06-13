@@ -134,7 +134,7 @@ class MotionDetector(object):
             'non_zero_percent': non_zero_percent})
 
         if w >= self.MIN_MOTION_SIZE[0] and h >= self.MIN_MOTION_SIZE[1]:
-            # static condition, avoid sudden light changes, img size is 320 x 180
+            # static condition, avoid sudden light changes, img size is 480 x 270
             if w > 470 and h > 260 and non_zero_percent < 7:
                 pass
             elif non_zero_pixels > config['motion']['dc_pixels'] and non_zero_percent > config['motion']['dc_percent']:
