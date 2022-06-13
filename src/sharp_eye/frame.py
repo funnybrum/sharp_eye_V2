@@ -49,7 +49,14 @@ class Frame:
         cv2.rectangle(motion_frame, (x, y), (x + w, y + h), (0, 255, 0), 3)
 
         stamp = "{:d} / {:.2f} / {} / {}".format(self.non_zero_pixels, self.non_zero_percent, self.motion, self.index)
-        color = (config['snapshot']['text'][0], config['snapshot']['text'][1], config['snapshot']['text'][2])
+        pixel = self.frame[0][0]
+
+        if pixel[0] == pixel[1] == pixel[2]:
+            # black and white image, green text is easily visible
+            color = (128, 255, 128)
+        else:
+            color = (config['snapshot']['text'][0], config['snapshot']['text'][1], config['snapshot']['text'][2])
+
         cv2.putText(motion_frame, stamp, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2)
 
         return motion_frame
