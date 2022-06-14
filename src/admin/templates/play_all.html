@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-   <video width="960" height="540" controls id="Player" src="{{ movies[0] }}" autoplay/>
+   <video width="100%" height="100%" controls id="Player" src="{{ movies[0] }}" autoplay/>
    <script>
         var nextsrc = [
         {% for movie in movies %}
