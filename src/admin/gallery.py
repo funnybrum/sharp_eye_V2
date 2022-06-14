@@ -11,7 +11,7 @@ from werkzeug.utils import safe_join
 from lib import config
 from admin import server_webapp
 
-from admin.login import requires_auth
+from admin.login import requires_auth, session_token
 
 
 def get_gallery_items():
@@ -101,3 +101,11 @@ def play_movie(filename):
 def download_movie(filename):
     movie_file = safe_join(config['snapshots']['location'], filename)
     return send_file(movie_file, as_attachment=True)
+
+
+@server_webapp.route("/movie/play_all/<path:date>", methods=["GET"])
+@requires_auth
+def play_all(date):
+    movies = get_gallery_items()[date]
+    movies = ["/movie/play/" + m["path"] + "?session_id=" + session_token for m in reversed(movies)]
+    return render_template('play_all.html', movies=movies)

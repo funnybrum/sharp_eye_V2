@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+   <video width="960" height="540" controls id="Player" src="{{ movies[0] }}" autoplay/>
+   <script>
+        var nextsrc = [
+        {% for movie in movies %}
+        "{{ movie }}",
+        {% endfor %}
+        ];
+        var elm = 0; var Player = document.getElementById('Player');
+        Player.onended = function(){
+            if(++elm < nextsrc.length){
+                Player.src = nextsrc[elm]; Player.play();
+            }
+        }
+   </script>
+{% endblock %}

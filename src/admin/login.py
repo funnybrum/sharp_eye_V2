@@ -25,7 +25,8 @@ def requires_auth(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         global session_token
-        no_session_token = request.cookies.get('session_id') != session_token
+        no_session_token = request.cookies.get('session_id') != session_token and \
+                           request.args.get('session_id') != session_token
 
         if no_session_token and request.args.get("key") == config["secret_key"]:
             session_token = generate_session_token()

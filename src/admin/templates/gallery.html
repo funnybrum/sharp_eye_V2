@@ -1,7 +1,10 @@
 {% extends "base.html" %}
 {% block content %}
     {% for date in content %}
-        <p>{{ date }}</p>
+        <p>
+            {{ date }}&nbsp;&nbsp;
+            <a href="/movie/play_all/{{ date }}"><img src="/static/play.png" width="24" height="24"></a>
+        </p>
         {% for item in content[date] %}
             {{ item.title }}, {{ item.size }}&nbsp;&nbsp;
             <a href="/movie/download/{{ item.path }}"><img src="/static/download.png" width="24" height="24"></a>&nbsp;
