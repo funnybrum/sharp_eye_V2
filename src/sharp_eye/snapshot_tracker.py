@@ -19,6 +19,11 @@ class SnapshotTracker(object):
         self._snapshot_folder = os.path.join(config['tmp_folder'], config['identifier'])
         if not os.path.exists(self._snapshot_folder):
             os.mkdir(self._snapshot_folder)
+        else:
+            # Clean the temporary snapshot folder
+            for f in os.listdir(self._snapshot_folder):
+                os.remove(f)
+
         self._video_folder = os.path.join(config['snapshots']['location'], config['identifier'])
         if not os.path.exists(self._video_folder):
             os.mkdir(self._video_folder)
@@ -101,32 +106,33 @@ class SnapshotTracker(object):
             # non-working because there will be no space to store camera snapshots for processing.
             total, used, _ = shutil.disk_usage('/tmp')
             # Determine the current load. 0 is low load, 10 is highest possible.
+            # Determine the current load. 0 is low load, 10 is highest possible.
             load = int(10 * used / total)
-            crf_map = [
-                '25',
-                '25',
-                '25',
-                '25',
-                '28',
-                '28',
-                '31',
-                '31',
-                '36',
-                '42',
-                '50'
+            preset_map = [
+                'medium',
+                'medium',
+                'medium',
+                'fast',
+                'fast',
+                'faster',
+                'veryfast',
+                'superfast',
+                'ultrafast',
+                'ultrafast',
+                'ultrafast'
             ]
-            crf_preset = crf_map[load]
+            ffmpeg_preset = preset_map[load]
 
-            # Create a video file using ffmpeg. The output is 10fps (input is 2fps).
-            # The vp9 compression is used as it is free and plays in browsers (hevc/x265 doesn't).
-            # The CRF is used to control the encoding speed. With VP9 it has more effect than the presets.
+            # Create a video file using ffmpeg.
+            # 10 fps, no console output, x265, crf 25 (default is 23), slow preset (default is slow).
+            # Check https://trac.ffmpeg.org/wiki/Encode/H.264 and https://trac.ffmpeg.org/wiki/Encode/H.265
             cmd = "nice -n %d /usr/bin/ffmpeg -nostats -loglevel 0 -y -safe 0 " \
                   "-r 10 -i %s " \
-                  "-c:v libvpx-vp9 -crf %s -b:v 0 -pix_fmt yuv420p %s" % \
-                  (8 - load, video_in_txt_file, crf_preset, output_file)
+                  "-c:v libx264 -preset %s -crf 25 -pix_fmt yuv420p %s" % \
+                  (8 - load, video_in_txt_file, ffmpeg_preset, output_file)
 
-            log("Creating motion video %s with crf %s at nice level %d" %
-                (os.path.split(output_file)[-1], crf_preset, 8 - load))
+            log("Creating motion video %s with %s preset at nice level %d" %
+                (os.path.split(output_file)[-1], ffmpeg_preset, 8 - load))
             start_time = time.time()
             dev_null = open(os.devnull, 'wb')
             Popen(cmd.split(' '), stdin=dev_null, stdout=dev_null, stderr=dev_null).wait()

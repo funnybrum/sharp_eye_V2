@@ -29,7 +29,7 @@ class MotionDetector(object):
         self.detector = cv2.createBackgroundSubtractorMOG2(history=config['motion']['history'],
                                                            varThreshold=config['motion']['threshold'],
                                                            detectShadows=True)
-        self.detector.setBackgroundRatio(0.5)
+        self.detector.setBackgroundRatio(config['motion']['bg_ratio'])
 
         self.camera = camera
         self.event_tracker = event_tracker
@@ -80,25 +80,8 @@ class MotionDetector(object):
         if frame is not None:
             return frame
 
-    # def _validate_image(self, img):
-    #     # Check if the image is defective. We get such images where a given line is repeated till
-    #     # the end of the image. This triggers false alarm. So we compare the last two lines of the
-    #     # array and if they are the same - this is defective image.
-    #     height = img.shape[0]
-    #     result = not (img[height-2] == img[height-3]).all()
-    #     if not result:
-    #         log("Detected image with defect")
-    #     return result
-
     def _process_frame(self, frame):
         processed_frame = self.resize(frame)
-        # B, G, R = cv2.split(processed_frame)
-        #
-        # R = cv2.equalizeHist(R)
-        # B = cv2.equalizeHist(B)
-        # G = cv2.equalizeHist(G)
-        #
-        # processed_frame = cv2.merge((B, G, R))
         processed_frame = cv2.cvtColor(processed_frame, cv2.COLOR_BGR2GRAY)
 
         # apply the mask that marks the motion detection region

@@ -9,8 +9,9 @@ motion:
     # single condition for detecting motion
     sc_pixels: 40
     # CV2 motion detection settings
-    threshold: 196  # threshold to apply for motion detection
-    history: 128    # number of frames to look back
+    threshold: 64  # threshold to apply for motion detection
+    history: 32    # number of frames to look back
+    bg_ratio: 0.8   # how fast an object is considered part of the background
 
 snapshots:
     # frame - record every frame
