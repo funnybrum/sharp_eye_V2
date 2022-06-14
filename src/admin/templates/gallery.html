@@ -4,11 +4,13 @@
         <p>
             {{ date }}&nbsp;&nbsp;
             <a href="/movie/play_all/{{ date }}"><img src="/static/play.png" width="24" height="24"></a>
+            <img src="/static/share.png" width="24" height="24" onclick="navigator.clipboard.writeText('{{ prefix }}/movie/play_all/{{ date }}?session_id={{ session_id }}')">
         </p>
         {% for item in content[date] %}
             {{ item.title }}, {{ item.size }}&nbsp;&nbsp;
             <a href="/movie/download/{{ item.path }}"><img src="/static/download.png" width="24" height="24"></a>&nbsp;
             <a href="/movie/play/{{ item.path }}"><img src="/static/play.png" width="24" height="24"></a>
+            <img src="/static/share.png" width="24" height="24" onclick="navigator.clipboard.writeText('{{ prefix }}/movie/play/{{ item.path }}?session_id={{ session_id }}')">
             <br><br>
         {% endfor %}
         <p>--------------------------------------------</p>

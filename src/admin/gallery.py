@@ -60,7 +60,11 @@ def get_gallery_items():
 @requires_auth
 def gallery():
     data = get_gallery_items()
-    return render_template('gallery.html', content=data)
+    from admin.login import session_token as st
+    return render_template('gallery.html',
+                           content=data,
+                           session_id=st,
+                           prefix=request.host.replace("/gallery", ""))
 
 
 @server_webapp.route("/movie/play/<path:filename>", methods=["GET"])
@@ -107,5 +111,5 @@ def download_movie(filename):
 @requires_auth
 def play_all(date):
     movies = get_gallery_items()[date]
-    movies = ["/movie/play/" + m["path"] + "?session_id=" + session_token for m in reversed(movies)]
+    movies = ["/movie/play/" + m["path"] for m in reversed(movies)]
     return render_template('play_all.html', movies=movies)
