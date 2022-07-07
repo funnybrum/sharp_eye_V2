@@ -22,7 +22,7 @@ class SnapshotTracker(object):
         else:
             # Clean the temporary snapshot folder
             for f in os.listdir(self._snapshot_folder):
-                os.remove(f)
+                os.remove(os.path.join(self._snapshot_folder. f))
 
         self._video_folder = os.path.join(config['snapshots']['location'], config['identifier'])
         if not os.path.exists(self._video_folder):
