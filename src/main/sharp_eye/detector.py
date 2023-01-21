@@ -1,7 +1,7 @@
 import cv2
 
-from lib.lib import log
 from lib import config
+from lib.log import log
 from sharp_eye.frame import Frame
 import numpy
 

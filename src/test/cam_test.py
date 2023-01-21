@@ -3,7 +3,7 @@ import os
 os.environ['APP_CONFIG'] = '/brum/dev/sharp_eye/src/resources/cam1.yaml'
 
 
-from sharp_eye.rtspcam import RtspCamera
+from sharp_eye import RtspCamera
 from time import sleep
 from datetime import datetime
 import numpy

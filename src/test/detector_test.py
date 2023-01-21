@@ -8,7 +8,7 @@ from fnmatch import fnmatch
 from itertools import cycle
 from random import shuffle
 
-from sharp_eye.detector import (
+from sharp_eye import (
     MotionDetector,
     config
 )

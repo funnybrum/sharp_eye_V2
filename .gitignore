@@ -2,8 +2,9 @@
 .idea/
 tests/*.txt
 venv
+venv2
 env
-src/resources/cert.pem
-src/resources/key.pem
-src/resources/smtp.yaml
-src/resources/secrets.yaml
+src/main/resources/cert.pem
+src/main/resources/key.pem
+src/main/resources/smtp.yaml
+src/main/resources/secrets.yaml

@@ -3,7 +3,7 @@ from __future__ import absolute_import
 from subprocess import Popen
 
 from lib import config
-from lib.lib import log
+from lib.log import log
 from admin import state
 from lib.quicklock import (
     is_locked,

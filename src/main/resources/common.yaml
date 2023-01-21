@@ -20,7 +20,7 @@ snapshots:
     type: motion_sequence
     # Location for snapshots. A subfolder named on the camera identifier will be created. I.e.
     # /snapshots/camera3
-    location: /snapshots
+    location: /tmp/snapshots
     # Number of frames to keep as history. These has effect only in case of 'motion_sequence'. If
     # the number is 10 this will result in getting snapshots for 10 frames before the motion
     # start has been detected. Keep value to 1 in the other cases to reduce load.
@@ -47,28 +47,28 @@ smtp:
 
 camera1:
     name: Camera 1
-    active: True
+    active: False
     snapshot: /tmp/cam1.bmp
     stream_uri: IN_SECRETS_YAML
     command: "APP_CONFIG=./resources/cam1.yaml python3 md.py"
 
 camera2:
     name: Camera 2
-    active: True
+    active: False
     snapshot: /tmp/cam2.bmp
     stream_uri: IN_SECRETS_YAML
     command: "APP_CONFIG=./resources/cam2.yaml python3 md.py"
 
 camera3:
     name: Camera 3
-    active: True
+    active: False
     snapshot: /tmp/cam3.bmp
     stream_uri: IN_SECRETS_YAML
     command: "APP_CONFIG=./resources/cam3.yaml python3 md.py"
 
 camera4:
     name: Camera 4
-    active: True
+    active: False
     snapshot: /tmp/cam4.bmp
     stream_uri: IN_SECRETS_YAML
     command: "APP_CONFIG=./resources/cam4.yaml python3 md.py"

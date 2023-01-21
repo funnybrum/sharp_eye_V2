@@ -4,10 +4,6 @@ import os
 if not os.environ.get('APP_CONFIG'):
     os.environ['APP_CONFIG'] = '/brum/dev/sharp_eye/src/resources/cam1.yaml'
 
-
-from fnmatch import fnmatch
-import numpy
-
 from lib import config
 
 CAM = 1
@@ -164,7 +160,7 @@ if __name__ == '__main__':
     load_motion_data()
     print('MOTION_THRESHOLD,MOTION_HISTORY,MIN_MOTION_SIZE,NOISE_FILTERING_RECT,DETECTED,WRONG,MISSED')
 
-    from sharp_eye.detector import MotionDetector
+    from sharp_eye import MotionDetector
     # for MOTION_HISTORY in [32]:
     #     for MOTION_THRESHOLD in [8, 16, 32, 64]:
     #         for MIN_MOTION_SIZE in [(4, 8)]:  # (16, 20)
@@ -178,7 +174,7 @@ if __name__ == '__main__':
     #                 if test(detector) == 'skip':
     #                     break
 
-    from sharp_eye.detector import MotionDetector
+    from sharp_eye import MotionDetector
     cam = create_cam()
     MotionDetector.MOTION_HISTORY = 32
     MotionDetector.MIN_MOTION_SIZE = (4, 8)

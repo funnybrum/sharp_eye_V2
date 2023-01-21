@@ -21,7 +21,7 @@ RUN touch /var/log/cron.log
 # Python scripts
 ADD requirements.txt /
 RUN pip3 install -r requirements.txt
-ADD src /sharp_eye
+ADD src/main /sharp_eye
 
 # Set the correct timezone
 RUN ln -snf /usr/share/zoneinfo/Europe/Sofia /etc/localtime && echo Europe/Sofia > /etc/timezone

@@ -1,5 +1,3 @@
-from __future__ import absolute_import
-
 import os
 from lib.yaml_config import load_config
 

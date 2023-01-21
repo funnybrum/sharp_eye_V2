@@ -4,7 +4,7 @@ if not os.environ.get('APP_CONFIG'):
     os.environ['APP_CONFIG'] = '/brum/dev/sharp_eye/src/resources/cam1.yaml'
 
 import cv2
-from sharp_eye.detector import MotionDetector
+from sharp_eye import MotionDetector
 from lib import config
 import time
 

@@ -2,6 +2,7 @@ import cv2
 
 from lib import config
 
+
 class Frame:
     def __init__(self,
                  index,

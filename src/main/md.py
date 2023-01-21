@@ -10,7 +10,6 @@ from sharp_eye.detector import MotionDetector
 from sharp_eye.event_tracker import EventTracker
 from sharp_eye.snapshot_tracker import SnapshotTracker
 
-
 if __name__ == '__main__':
     lock()
     cam = RtspCamera()
