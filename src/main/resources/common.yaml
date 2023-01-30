@@ -20,7 +20,7 @@ snapshots:
     type: motion_sequence
     # Location for snapshots. A subfolder named on the camera identifier will be created. I.e.
     # /snapshots/camera3
-    location: /tmp/snapshots
+    location: /snapshots
     # Number of frames to keep as history. These has effect only in case of 'motion_sequence'. If
     # the number is 10 this will result in getting snapshots for 10 frames before the motion
     # start has been detected. Keep value to 1 in the other cases to reduce load.
