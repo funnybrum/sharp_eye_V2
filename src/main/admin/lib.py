@@ -1,5 +1,3 @@
-import ssl
-
 from flask import Flask
 from threading import Thread
 
@@ -29,12 +27,7 @@ class Server(Thread):
 
     def run(self):
         """ Run the server."""
-        # logging.getLogger('werkzeug').setLevel(logging.ERROR)
-        ssl_context = None
-        if 'ssl_key' in config:
-            ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLSv1)
-            ssl_context.load_cert_chain(config['ssl_cert'], config['ssl_key'], config['ssl_pass'])
-        server_webapp.run(debug=False, host=config['host'], port=config['port'], ssl_context=ssl_context, threaded=True)
+        server_webapp.run(debug=False, host=config['host'], port=config['port'], threaded=True)
 
     @classmethod
     def startup(cls):

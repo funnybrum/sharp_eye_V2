@@ -4,11 +4,6 @@ identifier: admin
 host: 0.0.0.0
 port: 8080
 
-# Chane port to 443 and use the following to enable SSL
-#ssl_key: ./resources/key.pem
-#ssl_cert: ./resources/cert.pem
-#ssl_pass: SSL_KEY_PASSWORD
-
 password: IN_SECRETS_YAML
 cameras:
   - camera1

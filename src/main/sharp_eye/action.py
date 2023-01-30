@@ -2,7 +2,7 @@ from io import BytesIO
 import cv2
 
 from lib import config
-from lib.tools import send_email
+from lib.notifier_client import send_notification
 
 
 def alert(frame):
@@ -19,7 +19,7 @@ def alert(frame):
         'data': BytesIO(cv2.imencode('.jpg', cv2.resize(frame.prev_frame, (0, 0), fx=0.5, fy=0.5))[1].tostring()),
         'name': 'prev_snapshot.jpg'}
 
-    subject = 'Motion @ home'
     text = 'Got motion on %s' % config['identifier'] + '\n' + str(frame.get_metadata())
 
-    send_email(subject, text, [mf, f, pf])
+    send_notification(text)
+    # send_email(subject, text, [mf, f, pf])
