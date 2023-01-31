@@ -39,8 +39,8 @@ event_tracker:
 
 notifications:
     threshold:
-        pixels: 1000
-        percent: 0
+        pixels: 800
+        percent: 6
 
 camera1:
     name: Camera 1

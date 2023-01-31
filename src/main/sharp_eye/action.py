@@ -11,7 +11,7 @@ def alert(frame):
     Callback for sending an alert.
     """
     thresholds = config['notifications']['threshold']
-    if thresholds['pixels'] > frame.non_zero_pixels or thresholds['percent'] > frame.non_zero_percent:
+    if thresholds['pixels'] > frame.non_zero_pixels and thresholds['percent'] > frame.non_zero_percent:
         log("Skipping notification for %s" % frame.get_metadata())
         return
 
