@@ -21,5 +21,5 @@ def alert(frame):
 
     text = 'Got motion on %s' % config['identifier'] + '\n' + str(frame.get_metadata())
 
-    send_notification(text, f)
+    send_notification(text, f['data'])
     # send_email(subject, text, [mf, f, pf])
