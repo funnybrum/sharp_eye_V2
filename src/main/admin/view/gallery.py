@@ -11,7 +11,7 @@ from werkzeug.utils import safe_join
 from lib import config
 from admin import server_webapp
 
-from admin.login import requires_auth, session_token
+from admin.view.login import requires_auth
 
 
 def get_gallery_items():
@@ -60,7 +60,7 @@ def get_gallery_items():
 @requires_auth
 def gallery():
     data = get_gallery_items()
-    from admin.login import session_token as st
+    from admin.view.login import session_token as st
     return render_template('gallery.html',
                            content=data,
                            session_id=st,

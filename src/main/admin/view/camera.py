@@ -14,7 +14,7 @@ from admin import (
     state,
     server_webapp
 )
-from admin.login import requires_auth
+from admin.view.login import requires_auth
 
 
 @server_webapp.route('/')

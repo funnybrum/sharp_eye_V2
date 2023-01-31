@@ -5,7 +5,7 @@ if not os.environ.get('APP_CONFIG'):
 
 from admin.lib import Server
 # Import the application routes
-from admin import (  # noqa
+from admin.view import (  # noqa
     login,
     camera,
     gallery

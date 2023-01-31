@@ -1,5 +1,7 @@
-from flask import Flask
 from threading import Thread
+
+from flask import Flask
+from flask_apscheduler import APScheduler
 
 from lib import config
 
@@ -15,6 +17,7 @@ def gen_state():
 
 
 server_webapp = Flask(config['identifier'])
+scheduler = APScheduler()
 state = gen_state()
 
 
@@ -27,6 +30,10 @@ class Server(Thread):
 
     def run(self):
         """ Run the server."""
+        scheduler.api_enabled = False
+        scheduler.init_app(server_webapp)
+        scheduler.start()
+
         server_webapp.run(debug=False, host=config['host'], port=config['port'], threaded=True)
 
     @classmethod

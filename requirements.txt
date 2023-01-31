@@ -1,4 +1,5 @@
 flask==2.1.2
+Flask-APScheduler==1.12.4
 opencv-python==4.4.0.44
 numpy==1.19.2
 pyyaml==5.3.1
