@@ -9,17 +9,11 @@ def alert(frame):
     """
     Callback for sending an alert.
     """
-    # mf = {
-    #     'data': BytesIO(cv2.imencode('.jpg', cv2.resize(frame.get_motion_frame(), (0, 0), fx=0.25, fy=0.25))[1].tostring()),
-    #     'name': 'motion.jpg'}
-    f = {
-        'data': BytesIO(cv2.imencode('.jpg', cv2.resize(frame.frame, (0, 0), fx=0.5, fy=0.5))[1].tostring()),
-        'name': 'snapshot.jpg'}
-    # pf = {
-    #     'data': BytesIO(cv2.imencode('.jpg', cv2.resize(frame.prev_frame, (0, 0), fx=0.5, fy=0.5))[1].tostring()),
-    #     'name': 'prev_snapshot.jpg'}
+    thresholds = config['notifications']['threshold']
+    if thresholds['pixels'] > frame.non_zero_pixels or thresholds['percent'] > frame.non_zero_percent:
+        return
 
-    text = 'Got motion on %s' % config['identifier'] + '\n' + str(frame.get_metadata())
+    image = BytesIO(cv2.imencode('.jpg', cv2.resize(frame.get_motion_frame(), (0, 0), fx=0.25, fy=0.25))[1].tostring())
+    text = 'Got motion on %s' % config['identifier']
 
-    send_notification(text, f['data'])
-    # send_email(subject, text, [mf, f, pf])
+    send_notification(text, image)

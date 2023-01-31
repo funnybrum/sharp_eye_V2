@@ -37,13 +37,10 @@ event_tracker:
     motion_events_threshold: 4
 
 
-smtp:
-    server: smtp.gmail.com
-    port: 587
-    user: IN_SECRETS_YAML
-    password: IN_SECRETS_YAML
-    sender: Sharp Eye
-    recipient: IN_SECRETS_YAML
+notifications:
+    threshold:
+        pixels: 1000
+        percent: 0
 
 camera1:
     name: Camera 1
