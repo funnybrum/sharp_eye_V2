@@ -1,4 +1,5 @@
 from admin.lib import (
     state,
-    server_webapp
+    server_webapp,
+    scheduler
 )

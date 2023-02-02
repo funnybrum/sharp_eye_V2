@@ -60,10 +60,9 @@ def get_gallery_items():
 @requires_auth
 def gallery():
     data = get_gallery_items()
-    from admin.view.login import session_token as st
     return render_template('gallery.html',
                            content=data,
-                           session_id=st,
+                           session_id=request.cookies.get("session_id"),
                            prefix=request.host.replace("/gallery", ""))
 
 
