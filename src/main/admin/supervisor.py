@@ -11,8 +11,6 @@ from lib.quicklock import (
 )
 from time import sleep
 
-last_alarm_state = False
-
 
 def check():
     for cam in config['cameras']:
@@ -27,11 +25,3 @@ def check():
                 log('Disarming %s' % cam)
                 force_unlock(cam)
             sleep(5)
-
-    global last_alarm_state
-    if state['alarm'] != last_alarm_state:
-        last_alarm_state = state['alarm']
-        if last_alarm_state:
-            log('Activating alarm')
-        else:
-            log('Deactivating alarm')

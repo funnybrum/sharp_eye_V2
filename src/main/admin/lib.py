@@ -12,7 +12,6 @@ def gen_state():
         state[cam] = {}
         for prop in ['active']:
             state[cam][prop] = config[cam][prop]
-    state['alarm'] = False
     return state
 
 
