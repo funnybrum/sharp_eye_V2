@@ -1,31 +1,21 @@
 {% extends "base.html" %}
 {% block content %}
     <fieldset style='width: 150px;text-align: center'>
-        <legend>Galery</legend>
+        <legend>Gallery</legend>
         <form action="/gallery">
             <input type="submit" value="Gallery" style="width: 120px;">
         </form>
     </fieldset>
     <br>
-   {% for cam in config.cameras %}
-        <fieldset style='width: 150px; text-align: center;'>
-            <legend>{{ config[cam].name }}</legend>
-            <p>Is enabled: {{ state[cam].active }}</p>
-            {% if state[cam].active %}
-                <form action="/disarm/{{cam}}">
-                    <input type="submit" value="Deactivate" style="width: 120px;">
-                </form>
-            {% else %}
-                <form action="/arm/{{cam}}">
-                    <input type="submit" value="Activate" style="width: 120px;">
-                </form>
-            {% endif %}
-            <form action="/view/{{cam}}">
-                <input type="submit" value="Snapshot" style="width: 120px;">
-            </form>
-        </fieldset>
-        <br>
-    {% endfor %}
+    <fieldset style='width: 150px;text-align: center'>
+        <legend>Systems</legend>
+        <form action="/cameras">
+            <button type="submit" style="margin-top: 10px; width: 80%" formmethod="get">Cameras</button>
+        </form>
+        <form action="/hss">
+            <button type="submit" style="margin-top: 10px; width: 80%" formmethod="get">Security System</button>
+        </form>
+    </fieldset>
     <br>
     <fieldset style='width: 150px;text-align: center'>
         <legend>Logout</legend>

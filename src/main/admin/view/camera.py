@@ -17,15 +17,15 @@ from admin import (
 from admin.view.login import requires_auth
 
 
-@server_webapp.route('/')
+@server_webapp.route('/cameras')
 @requires_auth
-def status():
-    return render_template('home.html', state=state, config=config)
+def get_cameras():
+    return render_template('cameras.html', state=state, config=config)
 
 
 @server_webapp.route('/view/<cam_id>')
 @requires_auth
-def view(cam_id):
+def get_camera_snapshot(cam_id):
     if cam_id not in config['cameras']:
         return abort(404)
     return render_template('snapshot.html', img='/snapshot/%s' % cam_id)
@@ -33,7 +33,7 @@ def view(cam_id):
 
 @server_webapp.route('/snapshot/<cam_id>')
 @requires_auth
-def snapshot(cam_id):
+def get_camera_snapshot_image(cam_id):
     if cam_id not in config['cameras']:
         return abort(404)
 
@@ -46,20 +46,19 @@ def snapshot(cam_id):
     _, jpeg = cv2.imencode('.jpg', img)
 
     return send_file(io.BytesIO(jpeg.tostring()), mimetype='image/%s' % config[cam_id]['snapshot'][-3:])
-    # return send_file(config[cam_id]['snapshot'], mimetype='image/%s' % config[cam_id]['snapshot'][-3:])
 
 
 @server_webapp.route('/arm/<cam_id>')
 @requires_auth
-def arm(cam_id=None):
+def get_camera_arm(cam_id=None):
     if cam_id in config['cameras']:
         state[cam_id]['active'] = True
-    return redirect('/')
+    return redirect('/cameras')
 
 
 @server_webapp.route('/disarm/<cam_id>')
 @requires_auth
-def disarm(cam_id=None):
+def get_camera_disarm(cam_id=None):
     if cam_id in config['cameras']:
         state[cam_id]['active'] = False
-    return redirect('/')
+    return redirect('/cameras')
