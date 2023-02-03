@@ -1,7 +1,8 @@
 import os
 
-from flask import render_template
+from time import sleep
 
+from flask import render_template
 from flask import (
     abort,
     redirect
@@ -71,6 +72,7 @@ def get_hss_control_partition_action(partition, action):
 
     if action in ['arm', 'disarm']:
         mqtt_client.publish('paradox/control/partitions/%s' % partition, action)
+        sleep(2)
 
     if action in [HssMode.MANUAL, HssMode.AUTO]:
         HSS_STATE[partition]['mode'] = action
