@@ -102,6 +102,9 @@ def on_log(client, userdata, level, buff):
 
 @scheduler.task('cron', id='mqtt_client_check_admin', minute='*')
 def mqtt_client_check_admin():
+    import traceback
+    for line in traceback.format_stack():
+        log(line.strip())
     log("%s: %s" % (mqtt_client.is_connected(), "mqtt_client_check"))
     if not mqtt_client.is_connected():
         log("Connecting MQTT client")
