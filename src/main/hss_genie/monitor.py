@@ -32,7 +32,7 @@ def on_message(client, userdata, message):
 
 
 @scheduler.scheduled_job('cron', id='mqtt_client_check_genie', minute='*')
-def mqtt_client_check_genie():
+def mqtt_client_check():
     if not mqtt_client.is_connected():
         log("Connecting MQTT client")
         mqtt_client.connect(config["mqtt"]["host"], config["mqtt"]["port"])

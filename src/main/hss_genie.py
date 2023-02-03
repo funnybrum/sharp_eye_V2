@@ -8,7 +8,7 @@ from time import sleep
 from lib.quicklock import lock
 
 from hss_genie import scheduler
-from hss_genie.monitor import mqtt_client_check_genie
+from hss_genie.monitor import mqtt_client_check
 
 if __name__ == '__main__':
     try:
@@ -17,7 +17,7 @@ if __name__ == '__main__':
         exit(0)
 
     scheduler.start()
-    mqtt_client_check_genie()
+    mqtt_client_check()
 
     while True:
         sleep(5)

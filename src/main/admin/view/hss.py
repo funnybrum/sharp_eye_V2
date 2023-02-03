@@ -96,23 +96,11 @@ def on_message(client, userdata, message):
             HSS_STATE[partition]['armed'] = any(HSS_STATE[partition]['properties'].values())
 
 
-def on_log(client, userdata, level, buff):
-    log("%s: %s" % (mqtt_client.is_connected(), buff))
-
-
 @scheduler.task('cron', id='mqtt_client_check_admin', minute='*')
-def mqtt_client_check_admin():
-    # import traceback
-    # for line in traceback.format_stack():
-    #     log(line.strip())
-    log("%s: %s" % (mqtt_client.is_connected(), "mqtt_client_check"))
+def mqtt_client_check():
     if not mqtt_client.is_connected():
         log("Connecting MQTT client")
         mqtt_client.connect(config["mqtt"]["host"], config["mqtt"]["port"])
         mqtt_client.subscribe("paradox/states/partitions/#")
         mqtt_client.on_message = on_message
-        mqtt_client.on_log = on_log
         mqtt_client.loop_start()
-
-
-# mqtt_client_check_admin()
