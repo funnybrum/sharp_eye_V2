@@ -16,9 +16,8 @@ if __name__ == '__main__':
     except RuntimeError:
         exit(0)
 
-    scheduler.start()
     mqtt_client_check()
+    scheduler.start()
 
     while True:
-        sleep(5)
-
+        sleep(1)

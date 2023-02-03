@@ -18,4 +18,4 @@ def alert(frame):
     image = BytesIO(cv2.imencode('.jpg', cv2.resize(frame.get_motion_frame(), (0, 0), fx=0.25, fy=0.25))[1].tostring())
     text = 'Got motion on %s' % config['identifier']
 
-    send_notification(text, image)
+    send_notification(text, image, "camera_motion")

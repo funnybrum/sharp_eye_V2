@@ -11,6 +11,7 @@ from paho.mqtt.client import Client, MQTTv311
 
 from lib import config
 from lib.log import log
+from lib.hss import HssZoneState
 from admin.view.login import requires_auth
 from admin import (
     server_webapp,
@@ -25,27 +26,23 @@ class HssMode:
 
 HSS_STATE = {
     "1ST_FLOOR": {
-        "armed": True,
+        "state": None,
         "mode": HssMode.MANUAL,
-        "properties": {},
         "name": "Floor 1"
     },
     "2ND_FLOOR": {
-        "arm": False,
+        "state": None,
         "mode": HssMode.MANUAL,
-        "properties": {},
         "name": "Floor 2"
     },
     "SERVICE_ROOM": {
-        "armed": False,
+        "state": None,
         "mode": HssMode.MANUAL,
-        "properties": {},
         "name": "Service room"
     },
     "WORKSHOP": {
-        "armed": False,
+        "state": None,
         "mode": HssMode.MANUAL,
-        "properties": {},
         "name": "Workshop"
     }
 }
@@ -82,18 +79,10 @@ def on_message(client, userdata, message):
     payload = str(message.payload.decode("utf-8"))
     topic = message.topic
 
-    if topic.startswith("paradox/states/partitions"):
-        partition = topic.split("/")[3]
-        if partition not in HSS_STATE:
-            HSS_STATE[partition] = {
-                "armed": False,
-                "mode": HssMode.MANUAL,
-                "properties": {}
-            }
-        key = topic.split("/")[4]
-        if key.startswith("arm"):
-            HSS_STATE[partition]['properties'][key] = payload == "True"
-            HSS_STATE[partition]['armed'] = any(HSS_STATE[partition]['properties'].values())
+    partition = topic.split("/")[3]
+    key = topic.split("/")[4]
+    if key == "current_state":
+        HSS_STATE[partition]['state'] = HssZoneState.from_string(payload)
 
 
 @scheduler.task('cron', id='mqtt_client_check_admin', minute='*')

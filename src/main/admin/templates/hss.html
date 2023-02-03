@@ -1,19 +1,27 @@
 {% extends "base.html" %}
 {% block content %}
-
     {% for partition, partition_state in hss_state.items() %}
     <fieldset style='width: 175;text-align: center;'>
         <legend>{{ partition_state.name }}</legend>
         <form action="/hss">
-            {% if partition_state['armed'] %}
+            {% if partition_state['state'] == "armed" %}
                 <div style="width: 80; text-align: center; background-color: #FF0000; display: inline-block;">Armed</div>
-                <div style="display: inline-block;">
-                    <input type="submit" formaction="/hss/control/{{ partition }}/disarm" value="disarm" style="margin:4px; width: 50px"/>
-                </div>
-            {% else %}
+            {% elif partition_state['state'] == "arming" %}
+                <div style="width: 80; text-align: center; background-color: #FFFF00; display: inline-block;">Arming</div>
+            {% elif partition_state['state'] == "disarmed" %}
                 <div style="width: 80; text-align: center; background-color: #00CC00; display: inline-block;">Disarmed</div>
+            {% elif partition_state['state'] == "triggered" %}
+                <div style="width: 80; text-align: center; background-color: #FF66FF; display: inline-block;">Triggered</div>
+            {% else %}
+                <div style="width: 80; text-align: center; background-color: #FFFFFF; display: inline-block;">Unknown</div>
+            {% endif %}
+            {% if partition_state['state'] == "disarmed" %}
                 <div style="display: inline-block;">
                     <input type="submit" formaction="/hss/control/{{ partition }}/arm" value="arm" style="margin:4px; width: 50px"/>
+                </div>
+            {% else %}
+                <div style="display: inline-block;">
+                    <input type="submit" formaction="/hss/control/{{ partition }}/disarm" value="disarm" style="margin:4px; width: 50px"/>
                 </div>
             {% endif %}
             <br><br>
