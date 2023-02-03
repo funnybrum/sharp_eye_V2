@@ -97,7 +97,7 @@ def on_message(client, userdata, message):
 
 
 def on_log(client, userdata, level, buff):
-    log(buff)
+    log("%s: %s" % (mqtt_client.is_connected(), buff))
 
 
 @scheduler.task('cron', id='mqtt_client_check', minute='*')

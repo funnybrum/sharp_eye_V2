@@ -22,12 +22,13 @@ def on_message(client, userdata, message):
         partition = topic.split("/")[3]
         key = topic.split("/")[4]
         if key.startswith("arm"):
-            log("Partition %s, topic %s, payload %s" % (partition, topic, payload))
+            pass
+            # log("Partition %s, topic %s, payload %s" % (partition, topic, payload))
 
     if topic.startswith("paradox/states/zones"):
         zone = topic.split("/")[3]
         key = topic.split("/")[4]
-        log("Zone %s, key %s, payload %s" % (zone, key, payload))
+        # log("Zone %s, key %s, payload %s" % (zone, key, payload))
 
 
 @scheduler.scheduled_job('cron', id='mqtt_client_check', minute='*')
