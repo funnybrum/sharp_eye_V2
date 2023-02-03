@@ -112,4 +112,4 @@ def mqtt_client_check_admin():
         mqtt_client.loop_start()
 
 
-mqtt_client_check()
+mqtt_client_check_admin()
