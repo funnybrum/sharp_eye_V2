@@ -53,9 +53,7 @@ HSS_STATE = {
 mqtt_client = Client(
     client_id="master_mind_" + os.urandom(8).hex(),
     clean_session=True,
-    userdata=None,
-    protocol=MQTTv311,
-    transport="tcp")
+    protocol=MQTTv311)
 
 
 @server_webapp.route('/hss')
@@ -102,6 +100,7 @@ def on_message(client, userdata, message):
 def mqtt_client_check():
     if not mqtt_client.is_connected():
         log("Connecting MQTT client")
+        mqtt_client._client_id
         mqtt_client.connect(config["mqtt"]["host"], config["mqtt"]["port"])
         mqtt_client.subscribe("paradox/states/partitions/#")
         mqtt_client.on_message = on_message

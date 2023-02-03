@@ -9,11 +9,9 @@ from lib.log import log
 
 
 mqtt_client = Client(
-    client_id="master_mind_" + os.urandom(8).hex(),
+    client_id="master_mind_" + os.urandom(10).hex(),
     clean_session=True,
-    userdata=None,
-    protocol=MQTTv311,
-    transport="tcp")
+    protocol=MQTTv311)
 
 
 def on_message(client, userdata, message):
@@ -41,5 +39,3 @@ def mqtt_client_check():
         mqtt_client.subscribe("paradox/states/zones/#")
         mqtt_client.on_message = on_message
         mqtt_client.loop_start()
-    else:
-        log("MQTT client is connected")
