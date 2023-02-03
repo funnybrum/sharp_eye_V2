@@ -31,8 +31,8 @@ def on_message(client, userdata, message):
         # log("Zone %s, key %s, payload %s" % (zone, key, payload))
 
 
-@scheduler.scheduled_job('cron', id='mqtt_client_check', minute='*')
-def mqtt_client_check():
+@scheduler.scheduled_job('cron', id='mqtt_client_check_genie', minute='*')
+def mqtt_client_check_genie():
     if not mqtt_client.is_connected():
         log("Connecting MQTT client")
         mqtt_client.connect(config["mqtt"]["host"], config["mqtt"]["port"])

@@ -100,8 +100,8 @@ def on_log(client, userdata, level, buff):
     log("%s: %s" % (mqtt_client.is_connected(), buff))
 
 
-@scheduler.task('cron', id='mqtt_client_check', minute='*')
-def mqtt_client_check():
+@scheduler.task('cron', id='mqtt_client_check_admin', minute='*')
+def mqtt_client_check_admin():
     log("%s: %s" % (mqtt_client.is_connected(), "mqtt_client_check"))
     if not mqtt_client.is_connected():
         log("Connecting MQTT client")
