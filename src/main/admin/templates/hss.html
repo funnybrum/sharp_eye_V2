@@ -1,11 +1,35 @@
 {% extends "base.html" %}
 {% block content %}
-    <fieldset style='width: 150px;text-align: center'>
-        <legend>Zones</legend>
-        TODO
+
+    {% for partition, partition_state in hss_state.items() %}
+    <fieldset style='width: 175;text-align: center;'>
+        <legend>{{ partition_state.name }}</legend>
+        <form action="/hss">
+            {% if partition_state['armed'] %}
+                <div style="width: 80; text-align: center; background-color: #FF0000; display: inline-block;">Armed</div>
+                <div style="display: inline-block;">
+                    <input type="submit" formaction="/hss/control/{{ partition }}/disarm" value="disarm" style="margin:4px; width: 50px"/>
+                </div>
+            {% else %}
+                <div style="width: 80; text-align: center; background-color: #00CC00; display: inline-block;">Disarmed</div>
+                <div style="display: inline-block;">
+                    <input type="submit" formaction="/hss/control/{{ partition }}/arm" value="arm" style="margin:4px; width: 50px"/>
+                </div>
+            {% endif %}
+            <br><br>
+            <div style="width: 50; text-align: left; display: inline-block;">Mode</div>
+            {%- if partition_state['mode'] == 'auto' -%}
+                <input type="submit" formaction="/hss/control/{{ partition }}/manual" value="manual" style="margin:4px;"/>
+                <input type="submit" formaction="/hss/control/{{ partition }}/auto" value="auto" style="margin:4px; color: #30A010;"/>
+            {%- else -%}
+                <input type="submit" formaction="/hss/control/{{ partition }}/manual" value="manual" style="margin:4px; color: #30A010;"/>
+                <input type="submit" formaction="/hss/control/{{ partition }}/auto" value="auto" style="margin:4px;"/>
+            {%- endif -%}
+        </form>
     </fieldset>
     <br>
-    <fieldset style='width: 150px;text-align: center'>
+    {% endfor %}
+    <fieldset style='width: 185;text-align: center'>
         <form action="/">
             <button type="submit" style="margin-top: 10px; width: 80%" formmethod="get">Home</button>
         </form>

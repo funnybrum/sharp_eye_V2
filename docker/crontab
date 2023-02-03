@@ -1,1 +1,2 @@
 * * * * * /sharp_eye/admin.sh > /proc/1/fd/1 2>/proc/1/fd/2
+* * * * * /sharp_eye/hss_genie.sh > /proc/1/fd/1 2>/proc/1/fd/2

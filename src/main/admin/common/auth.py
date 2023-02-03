@@ -100,6 +100,6 @@ def requires_service_auth(f):
 
 @scheduler.task('cron', id='session_cleanup', minute='30')
 def session_cleanup():
-    to_be_deleted = [s for s in _valid_sessions if s["expiry"] < time()]
+    to_be_deleted = [s for s in _valid_sessions if _valid_sessions[s]["expiry"] < time()]
     for session in to_be_deleted:
         del _valid_sessions[session]
