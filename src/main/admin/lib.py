@@ -35,7 +35,6 @@ class Server(Thread):
 
         server_webapp.jinja_env.trim_blocks = True
         server_webapp.jinja_env.lstrip_blocks = True
-        server_webapp.jinja_env.tr
 
         server_webapp.run(debug=False, host=config['host'], port=config['port'], threaded=True)
 
