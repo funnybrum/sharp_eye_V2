@@ -20,4 +20,4 @@ if __name__ == '__main__':
     scheduler.start()
 
     while True:
-        sleep(1)
+        sleep(10)

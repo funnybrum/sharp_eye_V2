@@ -9,6 +9,10 @@ from lib.log import log
 from lib.hss import HssZoneState
 from lib.notifier_client import send_notification
 
+PARTITION_STATE = {
+
+}
+
 mqtt_client = Client(
     client_id="master_mind_" + os.urandom(10).hex(),
     clean_session=True,
@@ -18,6 +22,15 @@ mqtt_client = Client(
 def process_partition_state_change(partition, key, value):
     if key == "current_state":
         state = HssZoneState.from_string(value)
+
+        if partition in PARTITION_STATE:
+            if PARTITION_STATE[partition]['state'] == state:
+                return
+        else:
+            PARTITION_STATE[partition] = {
+                'state': state
+            }
+
         message = "Partition %s is %s" % (partition, state)
         send_notification(message, None, "arm_disarm")
 
