@@ -31,6 +31,7 @@ def process_partition_state_change(partition, key, value):
                 'state': state
             }
 
+        PARTITION_STATE[partition]['state'] = state
         message = "Partition %s is %s" % (partition, state)
         send_notification(message, None, "arm_disarm")
 
