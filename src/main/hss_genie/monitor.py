@@ -5,8 +5,9 @@ from hss_genie import scheduler
 from paho.mqtt.client import Client, MQTTv311
 
 from lib import config
-from lib.log import log
 from lib.hss import HssZoneState
+from lib.log import log
+from lib.telemetry import send_data
 from lib.notifier_client import send_notification
 
 PARTITION_STATE = {
@@ -50,6 +51,7 @@ ZONE_OPEN_EVENTS = {
 
 def process_zone_open(zone, key, value):
     if "True" == value:
+        send_data("security", {"zone.open": 1}, {"src": "hss_genie", "zone": zone})
         for event in ZONE_OPEN_EVENTS:
             if zone in ZONE_OPEN_EVENTS[event]['zones']:
                 message = ZONE_OPEN_EVENTS[event]['message'] % zone
