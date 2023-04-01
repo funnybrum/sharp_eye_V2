@@ -1,0 +1,12 @@
+extend: common.yaml
+
+identifier: camera5
+
+motion:
+  mask: resources/img/cam5_mask.png
+
+automation:
+  on_motion_sequence_script: /sharp_eye/resources/scripts/cam5_on_motion.sh
+
+snapshot:
+  text: [ 128, 255, 128 ]

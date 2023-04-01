@@ -70,6 +70,13 @@ camera4:
     stream_uri: IN_SECRETS_YAML
     command: "APP_CONFIG=./resources/cam4.yaml python3 sharp_eye.py"
 
+camera4:
+    name: Camera 5
+    active: True
+    snapshot: /tmp/cam5.bmp
+    stream_uri: IN_SECRETS_YAML
+    command: "APP_CONFIG=./resources/cam5.yaml python3 sharp_eye.py"
+
 mqtt:
   host: server
   port: 1883
