@@ -17,12 +17,17 @@ class SnapshotTracker(object):
         self._frames = {}
         self._history_length = config['snapshots']['history']
         self._snapshot_folder = os.path.join(config['tmp_folder'], config['identifier'])
+        self._object_detection_enabled = config['object_detection']['enabled']
+        self._object_detection_folder = config['object_detection']['path']
         if not os.path.exists(self._snapshot_folder):
             os.mkdir(self._snapshot_folder)
         else:
             # Clean the temporary snapshot folder
             for f in os.listdir(self._snapshot_folder):
                 os.remove(os.path.join(self._snapshot_folder, f))
+
+        if config['object_detection']['enabled'] and not os.path.exists(config['object_detection']['path']):
+            os.mkdir(config['object_detection']['path'])
 
         self._video_folder = os.path.join(config['snapshots']['location'], config['identifier'])
         if not os.path.exists(self._video_folder):
@@ -92,8 +97,11 @@ class SnapshotTracker(object):
         if partial:
             frame_files = in_files
         else:
+            # Remove a set of frames at the end as these are the outro gap. Keep half of them as there are case when
+            # these will still provide valuable information on what was moving and how it exited the surveillance area.
             frame_files = in_files[:-int(0.5 * config['event_tracker']['min_no_motion_gap'])]
 
+        # TODO Check if this if can be FALSE in some cases and if not - remove it.
         if len(frame_files) > 0:
             # Prepare list of images to be converted to a video file
             with open(video_in_txt_file, 'w') as out:
@@ -142,8 +150,24 @@ class SnapshotTracker(object):
                 time.time() - start_time,
                 len(frame_files)
             ))
-            os.remove(video_in_txt_file)
 
-        # Remove the snapshots that were persisted for creating the motion video.
+        else:
+            log("TODO check - the if can be false")
+
+        # Remove the that were persisted for creating the motion video.
+        remove_function = os.remove
+        if config['object_detection']['enabled']:
+            remove_function = SnapshotTracker.move_for_object_detection
+
         for f in in_files:
-            os.remove(f)
+            remove_function(f)
+        # Most likely the try block can be removed. Depends on the TODO for len(frame_files) above.
+        try:
+            remove_function(video_in_txt_file)
+        except:
+            pass
+
+    @staticmethod
+    def move_for_object_detection(filename):
+        target = os.path.join(config['object_detection']['path'], os.path.split(filename)[-1])
+        os.rename(filename, target)

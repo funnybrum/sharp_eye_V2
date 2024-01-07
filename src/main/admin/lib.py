@@ -44,5 +44,5 @@ class Server(Thread):
         if not Server._instance:
             Server._instance = Server()
 
-        if not Server._instance.isAlive():
+        if not Server._instance.is_alive():
             super(Server, Server._instance).start()

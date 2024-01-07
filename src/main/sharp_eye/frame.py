@@ -47,7 +47,7 @@ class Frame:
         w = int(w * scale * 4)
         h = int(h * scale * 4)
 
-        cv2.rectangle(motion_frame, (x, y), (x + w, y + h), (0, 255, 0), 3)
+        # cv2.rectangle(motion_frame, (x, y), (x + w, y + h), (0, 255, 0), 3)
 
         stamp = "{:d} / {:.2f} / {} / {}".format(self.non_zero_pixels, self.non_zero_percent, self.motion, self.index)
         pixel = self.frame[0][0]

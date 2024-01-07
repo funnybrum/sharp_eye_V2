@@ -1,12 +1,12 @@
-extend: common.yaml
+extend: camera_common.yaml
 
 identifier: camera1
 
 motion:
   mask: resources/img/cam1_mask.png
 
-automation:
-  on_motion_sequence_script: /sharp_eye/resources/scripts/cam1_on_motion.sh
+#automation:
+#  on_motion_sequence_script: /sharp_eye/resources/scripts/cam1_on_motion.sh
 
 snapshot:
   text: [0, 0, 0]

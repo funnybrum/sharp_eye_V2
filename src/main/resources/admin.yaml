@@ -4,9 +4,40 @@ identifier: admin
 host: 0.0.0.0
 port: 8080
 
+# List of all cameras that the admin app should control.
 cameras:
   - camera1
   - camera2
   - camera3
   - camera4
   - camera5
+
+camera1:
+    name: Camera 1
+    active: True
+    stream_uri: IN_SECRETS_YAML
+    command: "APP_CONFIG=./resources/cam1.yaml python3 sharp_eye.py"
+
+camera2:
+    name: Camera 2
+    active: True
+    stream_uri: IN_SECRETS_YAML
+    command: "APP_CONFIG=./resources/cam2.yaml python3 sharp_eye.py"
+
+camera3:
+    name: Camera 3
+    active: True
+    stream_uri: IN_SECRETS_YAML
+    command: "APP_CONFIG=./resources/cam3.yaml python3 sharp_eye.py"
+
+camera4:
+    name: Camera 4
+    active: True
+    stream_uri: IN_SECRETS_YAML
+    command: "APP_CONFIG=./resources/cam4.yaml python3 sharp_eye.py"
+
+camera5:
+    name: Camera 5
+    active: True
+    stream_uri: IN_SECRETS_YAML
+    command: "APP_CONFIG=./resources/cam5.yaml python3 sharp_eye.py"

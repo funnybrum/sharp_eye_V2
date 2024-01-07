@@ -1,9 +1,10 @@
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 MAINTAINER funnybrum@gmial.com
 
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && \
+    apt-get -y install apt-utils && \
     apt-get -y install cron && \
     apt-get -y install python3 python3-pip && \
     apt-get -y install python3-opencv && \
@@ -11,6 +12,8 @@ RUN apt-get update && \
     apt-get -y install tzdata && \
     apt-get -y install curl && \
     apt-get -y install nano
+
+RUN apt-get -y install libmfx1 libmfx-tools libva-drm2 libva-x11-2 vainfo intel-media-va-driver-non-free
 
 # Cron setup
 ADD docker/crontab /etc/cron.d/schedule

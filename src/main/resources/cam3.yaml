@@ -1,4 +1,4 @@
-extend: common.yaml
+extend: camera_common.yaml
 
 identifier: camera3
 

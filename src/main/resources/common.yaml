@@ -1,82 +1,34 @@
 extend: secrets.yaml
 
-motion:
-    # timeout for retrieving frame
-    snapshot_timeout: 5
-    # two conditions, if both are true then this is a motion
-    dc_pixels: 10
-    dc_percent: 0.1
-    # single condition for detecting motion
-    sc_pixels: 40
-    # CV2 motion detection settings
-    threshold: 64  # threshold to apply for motion detection
-    history: 32    # number of frames to look back
-    bg_ratio: 0.8   # how fast an object is considered part of the background
-
-snapshots:
-    # frame - record every frame
-    # motion_frame - record only frames with detected motion in them
-    # motion_sequence - record only frames that are part of motion sequences
-    type: motion_sequence
-    # Location for snapshots. A subfolder named on the camera identifier will be created. I.e.
-    # /snapshots/camera3
-    location: /snapshots
-    # Number of frames to keep as history. These has effect only in case of 'motion_sequence'. If
-    # the number is 10 this will result in getting snapshots for 10 frames before the motion
-    # start has been detected. Keep value to 1 in the other cases to reduce load.
-    history: 15
-
-
 tmp_folder: /tmp
 
-event_tracker:
-    # no-motion gap for splitting motion frame series to events
-    min_no_motion_gap: 20
-    # conditions to validating motion on series of motion detection events
-    history_frame_count: 10
-    motion_events_threshold: 4
-
-
+# Thresholds for sending motion notifications. Used by all cameras.
 notifications:
     threshold:
         pixels: 800
         percent: 6
 
-camera1:
-    name: Camera 1
-    active: True
-    snapshot: /tmp/cam1.bmp
-    stream_uri: IN_SECRETS_YAML
-    command: "APP_CONFIG=./resources/cam1.yaml python3 sharp_eye.py"
-
-camera2:
-    name: Camera 2
-    active: True
-    snapshot: /tmp/cam2.bmp
-    stream_uri: IN_SECRETS_YAML
-    command: "APP_CONFIG=./resources/cam2.yaml python3 sharp_eye.py"
-
-camera3:
-    name: Camera 3
-    active: True
-    snapshot: /tmp/cam3.bmp
-    stream_uri: IN_SECRETS_YAML
-    command: "APP_CONFIG=./resources/cam3.yaml python3 sharp_eye.py"
-
-camera4:
-    name: Camera 4
-    active: True
-    snapshot: /tmp/cam4.bmp
-    stream_uri: IN_SECRETS_YAML
-    command: "APP_CONFIG=./resources/cam4.yaml python3 sharp_eye.py"
-
-camera5:
-    name: Camera 5
-    active: True
-    snapshot: /tmp/cam5.bmp
-    stream_uri: IN_SECRETS_YAML
-    command: "APP_CONFIG=./resources/cam5.yaml python3 sharp_eye.py"
-
+# MQTT common details
 mqtt:
   host: server
   port: 1883
+
+# Common object detection configuration
+object_detection:
+    path: /tmp/object_detection
+
+# Common camera properties. Shared by both the admin app and the cameras.
+camera1:
+    snapshot: /tmp/cam1.bmp
+
+camera2:
+    snapshot: /tmp/cam2.bmp
+
+camera3:
+    snapshot: /tmp/cam3.bmp
+
+camera4:
+    snapshot: /tmp/cam4.bmp
+
+camera5:
+    snapshot: /tmp/cam5.bmp

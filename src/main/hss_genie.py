@@ -1,3 +1,7 @@
+"""
+Notifications generator for events coming from the home security system (HSS).
+"""
+
 # Temporary, for test purposes
 import os
 if not os.environ.get('APP_CONFIG'):

@@ -4,7 +4,4 @@ tests/*.txt
 venv
 venv2
 env
-src/main/resources/cert.pem
-src/main/resources/key.pem
-src/main/resources/smtp.yaml
 src/main/resources/secrets.yaml

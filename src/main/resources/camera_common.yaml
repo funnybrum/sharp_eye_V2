@@ -1,0 +1,40 @@
+extend: common.yaml
+
+motion:
+    # timeout for retrieving frame
+    snapshot_timeout: 5
+    # two conditions, if both are true then this is a motion
+    dc_pixels: 10
+    dc_percent: 0.1
+    # single condition for detecting motion
+    sc_pixels: 40
+    # CV2 motion detection settings
+    threshold: 64  # threshold to apply for motion detection
+    history: 32    # number of frames to look back
+    bg_ratio: 0.8   # how fast an object is considered part of the background
+
+snapshots:
+    # frame - record every frame
+    # motion_frame - record only frames with detected motion in them
+    # motion_sequence - record only frames that are part of motion sequences
+    type: motion_sequence
+    # Location for motion videos. A subfolder named on the camera identifier will be created. I.e.
+    # /snapshots/camera3
+    location: /snapshots
+    # Number of frames to keep as history. These has effect only in case of 'motion_sequence'. If
+    # the number is 10 this will result in getting snapshots for 10 frames before the motion
+    # start has been detected. Keep value to 1 in the other cases to reduce load.
+    history: 15
+
+event_tracker:
+    # No-motion gap for detecting different or same motion events. If the motion gap in terms of frames count is higher
+    # than this number this is separate motion sequence. If it is smaller - this is the same motion sequence.
+    min_no_motion_gap: 20
+    # Conditions to validating motion on series of motion detection events. A set of frames will be identified as motion
+    # if in a sequence of 'history_frame_count' frames there are at least 'motion_events_threshold' frames with detected
+    # motion in them.
+    history_frame_count: 10
+    motion_events_threshold: 4
+
+object_detection:
+    enabled: true
