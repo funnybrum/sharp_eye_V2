@@ -154,7 +154,12 @@ class SnapshotTracker(object):
 
         # Remove the that were persisted for creating the motion video.
         remove_function = os.remove
-        if config['object_detection']['enabled']:
+
+        # If object detection is enabled and there is remaining space on the drive - move the snapshots for object
+        # object detection.
+        sufficient_free_space_available = used / total < config['object_detection']['disk_utilization_threshold']
+        object_detection_enabled = config['object_detection']['enabled']
+        if object_detection_enabled and sufficient_free_space_available:
             remove_function = SnapshotTracker.move_for_object_detection
 
         for f in in_files:

@@ -16,6 +16,7 @@ mqtt:
 # Common object detection configuration
 object_detection:
     path: /tmp/object_detection
+    disk_utilization_threshold: 0.9
 
 # Common camera properties. Shared by both the admin app and the cameras.
 camera1:
