@@ -54,12 +54,11 @@ class Orchestrator(object):
         sequence_folder = os.path.dirname(descriptor)
 
         frames = [os.path.join(sequence_folder, os.path.split(f[6:-2])[-1]) for f in frames if 'file' in f]
-        use_fast_model = self._should_use_fast_model()
 
         result = []
         for f in frames:
             img = cv2.imread(f)
-            objects = self._detector.detect(img, fast=use_fast_model)
+            objects = self._detector.detect(img, fast=self._should_use_fast_model())
             objects = [o for o in objects if o['confidence'] >= self._confidence_threshold]
             if objects:
                 result.append({
