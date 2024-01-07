@@ -4,7 +4,7 @@ identifier: object_detector
 
 yolo:
   model_source: YOLOv7/WongKinYiu_yolov7_main
-  pretrained_model: YOLOv7/yolov7-e6e.pt
+  pretrained_model: YOLOv7/yolov7-w6.pt
   pretrained_model_tiny: YOLOv7/yolov7-tiny.pt
 
 object_detection:

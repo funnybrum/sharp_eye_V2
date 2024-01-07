@@ -73,6 +73,8 @@ class Orchestrator(object):
 
         # Clean up the processed motion sequence descriptor
         os.remove(descriptor)
-        log("Processed %d frames in %d seconds" % (len(frames), time.time() - start))
+        total, used, _ = shutil.disk_usage(self._input_path)
+        disk_utilization = used / total
+        log("Processed %d frames in %d seconds. Disk utilization is %d%%" % (len(frames), time.time() - start, disk_utilization * 100))
 
         return result
