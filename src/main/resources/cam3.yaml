@@ -5,8 +5,8 @@ identifier: camera3
 motion:
   mask: resources/img/cam3_mask.png
 
-automation:
-  on_motion_sequence_script: /sharp_eye/resources/scripts/cam3_on_motion.sh
+#automation:
+#  on_motion_sequence_script: /sharp_eye/resources/scripts/cam3_on_motion.sh
 
 snapshot:
   text: [ 0, 0, 0 ]

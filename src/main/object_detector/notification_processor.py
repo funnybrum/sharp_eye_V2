@@ -4,6 +4,7 @@ import cv2
 import numpy
 
 from lib import config
+from lib.log import log
 from lib.notifier_client import send_notification as _send_notification
 
 
@@ -37,9 +38,9 @@ class NotificationProcessor(object):
         notification_frame = self._pick_best_frame(frames_with_objects)
         if not notification_frame:
             return
-        self._send_notification(notification_frame)
+        self._send_notification(descriptor, notification_frame)
 
-    def _send_notification(self, frame):
+    def _send_notification(self, descriptor, frame):
         # Draw rectangle in the frame to mark the object of interest. Used for dev purposes.
         for obj in frame['objects']:
             cv2.rectangle(
@@ -58,7 +59,24 @@ class NotificationProcessor(object):
                                     fx=self._scale_factor, fy=self._scale_factor))
             [1].tostring())
 
-        # _send_notification("Motion detected", image, "camera_motion")
-        cv2.imshow("Motion detected", cv2.resize(frame['frame'], (0, 0), fx=0.5, fy=0.5))
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
+        topic = self._get_notification_topic(frame)
+        log("Sending notification for %s to %s" % (descriptor, topic))
+
+        message = "Motion detected: "
+        for o in frame['objects']:
+            message += "%s(%0.2f), " % (o['name'], o['confidence'])
+        message = message[:-2] + '.'
+
+        _send_notification(message, image, topic)
+        # For debugging purposes - show frames instead of sending them through the notification service.
+        # cv2.imshow(topic, cv2.resize(frame['frame'], (0, 0), fx=0.5, fy=0.5))
+        # cv2.waitKey(0)
+        # cv2.destroyAllWindows()
+
+    def _get_notification_topic(self, frame):
+        confidence_name_pairs = [(o['confidence'], o['name']) for o in frame['objects']]
+        sorted_pairs = sorted(confidence_name_pairs, key=lambda p: p[0], reverse=True)
+        sorted_obj_types = [p[1] for p in sorted_pairs]
+        for obj_type in sorted_obj_types:
+            if obj_type in self._objects_of_interest:
+                return self._objects_of_interest[obj_type]['topic']

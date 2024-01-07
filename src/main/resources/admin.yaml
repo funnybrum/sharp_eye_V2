@@ -4,14 +4,6 @@ identifier: admin
 host: 0.0.0.0
 port: 8080
 
-# List of all cameras that the admin app should control.
-cameras:
-  - camera1
-  - camera2
-  - camera3
-  - camera4
-  - camera5
-
 camera1:
     name: Camera 1
     active: True

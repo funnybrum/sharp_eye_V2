@@ -21,7 +21,7 @@ class Orchestrator(object):
         self._confidence_threshold = config['object_detection']['confidence_threshold']
 
     def loop(self):
-        for descriptor_file in sorted(glob.glob('%s/*.txt' % self._input_path)):
+        for descriptor_file in sorted(glob.glob('%s/**/*.txt' % self._input_path)):
             descriptor = os.path.split(descriptor_file)[-1][:-4]
             log("Processing %s" % descriptor)
             result = self._process_motion_sequence(descriptor_file)
@@ -51,7 +51,9 @@ class Orchestrator(object):
         with open(descriptor, 'r') as descriptor_file:
             frames = descriptor_file.readlines()
 
-        frames = [os.path.join(self._input_path, os.path.split(f[6:-2])[-1]) for f in frames if 'file' in f]
+        sequence_folder = os.path.dirname(descriptor)
+
+        frames = [os.path.join(sequence_folder, os.path.split(f[6:-2])[-1]) for f in frames if 'file' in f]
         use_fast_model = self._should_use_fast_model()
 
         result = []

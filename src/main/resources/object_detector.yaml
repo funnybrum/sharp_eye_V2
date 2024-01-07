@@ -10,7 +10,7 @@ yolo:
 object_detection:
   # List of object types of interest with confidence threshold for alerting.
   confidence_threshold: 0.5
-  fast_model_disk_utilization_threshold: 0.1
+  fast_model_disk_utilization_threshold: 0.8
 
 notifications:
   objects:

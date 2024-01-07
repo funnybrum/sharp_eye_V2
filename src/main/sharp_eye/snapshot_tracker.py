@@ -17,8 +17,6 @@ class SnapshotTracker(object):
         self._frames = {}
         self._history_length = config['snapshots']['history']
         self._snapshot_folder = os.path.join(config['tmp_folder'], config['identifier'])
-        self._object_detection_enabled = config['object_detection']['enabled']
-        self._object_detection_folder = config['object_detection']['path']
         if not os.path.exists(self._snapshot_folder):
             os.mkdir(self._snapshot_folder)
         else:
@@ -169,5 +167,5 @@ class SnapshotTracker(object):
 
     @staticmethod
     def move_for_object_detection(filename):
-        target = os.path.join(config['object_detection']['path'], os.path.split(filename)[-1])
-        os.rename(filename, target)
+        target = os.path.join(config['object_detection']['path'], config['identifier'], os.path.split(filename)[-1])
+        shutil.move(filename, target)

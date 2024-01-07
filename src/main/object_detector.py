@@ -32,10 +32,15 @@ if __name__ == '__main__':
     input_path = config['object_detection']['path']
     if not os.path.exists(input_path):
         os.mkdir(input_path)
-    else:
-        # Clean up old data.
-        for f in os.listdir(input_path):
-            os.remove(os.path.join(input_path, f))
+
+    for cam in config['cameras']:
+        cam_folder = os.path.join(input_path, cam)
+        if not os.path.exists(cam_folder):
+            os.mkdir(cam_folder)
+        else:
+            # Delete all old files.
+            for f in os.listdir(cam_folder):
+                os.remove(os.path.join(cam_folder, f))
 
     detector = Detector()
     detector.init()

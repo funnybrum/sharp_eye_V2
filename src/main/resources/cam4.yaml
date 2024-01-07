@@ -5,8 +5,8 @@ identifier: camera4
 motion:
   mask: resources/img/cam4_mask.png
 
-automation:
-  on_motion_sequence_script: /sharp_eye/resources/scripts/cam4_on_motion.sh
+#automation:
+#  on_motion_sequence_script: /sharp_eye/resources/scripts/cam4_on_motion.sh
 
 snapshot:
   text: [ 128, 255, 128 ]

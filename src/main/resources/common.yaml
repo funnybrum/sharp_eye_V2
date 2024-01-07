@@ -32,3 +32,11 @@ camera4:
 
 camera5:
     snapshot: /tmp/cam5.bmp
+
+# List of all cameras.
+cameras:
+  - camera1
+  - camera2
+  - camera3
+  - camera4
+  - camera5
