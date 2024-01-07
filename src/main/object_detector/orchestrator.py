@@ -56,6 +56,8 @@ class Orchestrator(object):
         frames = [os.path.join(sequence_folder, os.path.split(f[6:-2])[-1]) for f in frames if 'file' in f]
 
         result = []
+        import time
+        start = time.time()
         for f in frames:
             img = cv2.imread(f)
             objects = self._detector.detect(img, fast=self._should_use_fast_model())
@@ -71,5 +73,6 @@ class Orchestrator(object):
 
         # Clean up the processed motion sequence descriptor
         os.remove(descriptor)
+        log("Processed %d frames in %d seconds" % (len(frames), time.time() - start))
 
         return result
