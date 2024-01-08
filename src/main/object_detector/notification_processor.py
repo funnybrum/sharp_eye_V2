@@ -4,7 +4,6 @@ import cv2
 import numpy
 
 from lib import config
-from lib.log import log
 from lib.notifier_client import send_notification as _send_notification
 
 
@@ -34,13 +33,13 @@ class NotificationProcessor(object):
 
         return frames_with_objects[numpy.argmax(frame_score)]
 
-    def process(self, descriptor, frames_with_objects):
+    def process(self, video_file, frames_with_objects):
         notification_frame = self._pick_best_frame(frames_with_objects)
         if not notification_frame:
             return
-        self._send_notification(descriptor, notification_frame)
+        self._send_notification(notification_frame)
 
-    def _send_notification(self, descriptor, frame):
+    def _send_notification(self, frame):
         # Draw rectangle in the frame to mark the object of interest. Used for dev purposes.
         for obj in frame['objects']:
             cv2.rectangle(
@@ -60,7 +59,6 @@ class NotificationProcessor(object):
             [1].tostring())
 
         topic = self._get_notification_topic(frame)
-        log("Sending notification for %s to %s" % (descriptor, topic))
 
         message = "Motion detected: "
         for o in frame['objects']:
@@ -69,7 +67,7 @@ class NotificationProcessor(object):
 
         _send_notification(message, image, topic)
         # For debugging purposes - show frames instead of sending them through the notification service.
-        # cv2.imshow(topic, cv2.resize(frame['frame'], (0, 0), fx=0.5, fy=0.5))
+        # cv2.imshow(message, cv2.resize(frame['frame'], (0, 0), fx=0.5, fy=0.5))
         # cv2.waitKey(0)
         # cv2.destroyAllWindows()
 

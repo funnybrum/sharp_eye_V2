@@ -1,6 +1,6 @@
 import glob
 import os
-import shutil
+from time import time
 
 import cv2
 
@@ -9,34 +9,31 @@ from lib.log import log
 
 
 class Orchestrator(object):
-    def __init__(self, detector, processors):
+    def __init__(self, detector, metadata_store, processors):
         """
         :param detector: Object with .detect method that takes a image end return detected objects.
         :param processors: List of processors for the detected objects.
         """
         self._detector = detector
+        self._metadata_store = metadata_store
         self._processors = processors
-        self._input_path = config['object_detection']['path']
-        self._fast_model_disk_utilization_threshold = config['object_detection']['fast_model_disk_utilization_threshold']
         self._confidence_threshold = config['object_detection']['confidence_threshold']
 
     def loop(self):
-        for descriptor_file in sorted(glob.glob('%s/**/*.txt' % self._input_path)):
-            descriptor = os.path.split(descriptor_file)[-1][:-4]
-            log("Processing %s" % descriptor)
-            result = self._process_motion_sequence(descriptor_file)
-            if result:
+        for video_file in sorted(glob.glob('/snapshots/**/*.mp4')):
+            if self._metadata_store.get_metadata(video_file):
+                continue
+
+            frames_with_objects = self._process_video_file(video_file)
+
+            self._metadata_store.store_metadata(video_file, frames_with_objects)
+            if frames_with_objects:
                 for processor in self._processors:
-                    processor.process(descriptor, result)
+                    processor.process(video_file, frames_with_objects)
 
-    def _should_use_fast_model(self):
-        total, used, _ = shutil.disk_usage(self._input_path)
-        disk_utilization = used / total
-        return disk_utilization >= self._fast_model_disk_utilization_threshold
-
-    def _process_motion_sequence(self, descriptor):
+    def _process_video_file(self, video_file):
         """
-        Process motion sequence by looking at the video generation file used by ffmpeg.
+        Process video file through the object detector and generate list of frames with motion.
 
         Result is list of frames containing objects. For each item in the list there are two properties:
         1) frame - the CV2 image
@@ -44,37 +41,27 @@ class Orchestrator(object):
           - 'name' that is the object type (person, dog, ...)
           - 'confidence' containing the confidence value
           - 'ymin', 'ymax', 'xmin', 'xmax' specifying the object bounding box in the frame
-
-        :param descriptor: video generation files with frame sequence
-        :return: list of frames with detected objects
         """
-        with open(descriptor, 'r') as descriptor_file:
-            frames = descriptor_file.readlines()
+        log("Processing %s" % os.path.split(video_file)[-2:])
+        frames = 0
+        frames_with_objects = []
+        start = time()
+        capture = cv2.VideoCapture(video_file)
+        while True:
+            ret, frame = capture.read()
+            if not ret:
+                break
 
-        sequence_folder = os.path.dirname(descriptor)
-
-        frames = [os.path.join(sequence_folder, os.path.split(f[6:-2])[-1]) for f in frames if 'file' in f]
-
-        result = []
-        import time
-        start = time.time()
-        for f in frames:
-            img = cv2.imread(f)
-            objects = self._detector.detect(img, fast=self._should_use_fast_model())
+            frames += 1
+            objects = self._detector.detect(frame)
             objects = [o for o in objects if o['confidence'] >= self._confidence_threshold]
             if objects:
-                result.append({
-                    'frame': img,
+                frames_with_objects.append({
+                    'frame': frame,
                     'objects': objects
                 })
 
-            # Clean up processed frames
-            os.remove(f)
+        log("Processed %s with %s frames in %d seconds" % (
+            os.path.split(video_file)[-2:], frames, time() - start))
 
-        # Clean up the processed motion sequence descriptor
-        os.remove(descriptor)
-        total, used, _ = shutil.disk_usage(self._input_path)
-        disk_utilization = used / total
-        log("Processed %d frames in %d seconds. Disk utilization is %d%%" % (len(frames), time.time() - start, disk_utilization * 100))
-
-        return result
+        return frames_with_objects

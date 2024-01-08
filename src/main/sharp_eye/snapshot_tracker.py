@@ -6,6 +6,7 @@ import time
 
 from datetime import datetime
 from subprocess import Popen
+from pathlib import Path
 
 from lib import config
 
@@ -23,9 +24,6 @@ class SnapshotTracker(object):
             # Clean the temporary snapshot folder
             for f in os.listdir(self._snapshot_folder):
                 os.remove(os.path.join(self._snapshot_folder, f))
-
-        if config['object_detection']['enabled'] and not os.path.exists(config['object_detection']['path']):
-            os.mkdir(config['object_detection']['path'])
 
         self._video_folder = os.path.join(config['snapshots']['location'], config['identifier'])
         if not os.path.exists(self._video_folder):
@@ -148,29 +146,16 @@ class SnapshotTracker(object):
                 time.time() - start_time,
                 len(frame_files)
             ))
-
         else:
             log("TODO check - the if can be false")
 
-        # Remove the that were persisted for creating the motion video.
-        remove_function = os.remove
-
-        # If object detection is enabled and there is remaining space on the drive - move the snapshots for object
-        # object detection.
-        sufficient_free_space_available = used / total < config['object_detection']['disk_utilization_threshold']
-        object_detection_enabled = config['object_detection']['enabled']
-        if object_detection_enabled and sufficient_free_space_available:
-            remove_function = SnapshotTracker.move_for_object_detection
-
         for f in in_files:
-            remove_function(f)
+            os.remove(f)
         # Most likely the try block can be removed. Depends on the TODO for len(frame_files) above.
         try:
-            remove_function(video_in_txt_file)
+            os.remove(video_in_txt_file)
         except:
             pass
 
-    @staticmethod
-    def move_for_object_detection(filename):
-        target = os.path.join(config['object_detection']['path'], config['identifier'], os.path.split(filename)[-1])
-        shutil.move(filename, target)
+        # Use the file to trigger object detection.
+        Path(config['object_detection']['trigger_file']).touch()

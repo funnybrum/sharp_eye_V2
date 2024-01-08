@@ -18,8 +18,6 @@ snapshots:
     # motion_frame - record only frames with detected motion in them
     # motion_sequence - record only frames that are part of motion sequences
     type: motion_sequence
-    # Location for motion videos. A subfolder named on the camera identifier will be created. I.e.
-    # /snapshots/camera3
     # Number of frames to keep as history. These has effect only in case of 'motion_sequence'. If
     # the number is 10 this will result in getting snapshots for 10 frames before the motion
     # start has been detected. Keep value to 1 in the other cases to reduce load.
@@ -34,6 +32,3 @@ event_tracker:
     # motion in them.
     history_frame_count: 10
     motion_events_threshold: 4
-
-object_detection:
-    enabled: true

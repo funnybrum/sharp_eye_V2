@@ -15,8 +15,8 @@ mqtt:
 
 # Common object detection configuration
 object_detection:
-    path: /tmp/object_detection
-    disk_utilization_threshold: 0.9
+  # Used as cross-process event. The file is created when object detection should be performed.
+  trigger_file: /tmp/object_detection.tmp
 
 # Common camera properties. Shared by both the admin app and the cameras.
 camera1:
@@ -46,3 +46,4 @@ snapshots:
     # Location for motion videos. A subfolder named on the camera identifier will be created. I.e.
     # /snapshots/camera3
     location: /snapshots
+    metadata: /snapshots/metadata

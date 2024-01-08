@@ -18,6 +18,7 @@ from time import sleep
 from lib import config
 from lib.log import log
 from lib.quicklock import lock
+from lib.metadata_store import MetadataStore
 from object_detector.orchestrator import Orchestrator
 from object_detector.yolo import Detector
 from object_detector.notification_processor import NotificationProcessor
@@ -28,33 +29,31 @@ if __name__ == '__main__':
     except RuntimeError:
         exit(0)
 
-    # Prepare the input folder.
-    input_path = config['object_detection']['path']
-    if not os.path.exists(input_path):
-        os.mkdir(input_path)
-
-    for cam in config['cameras']:
-        cam_folder = os.path.join(input_path, cam)
-        if not os.path.exists(cam_folder):
-            os.mkdir(cam_folder)
-        else:
-            # Delete all old files.
-            for f in os.listdir(cam_folder):
-                os.remove(os.path.join(cam_folder, f))
-
     detector = Detector()
     detector.init()
     log("Models loaded.")
 
     notification_processor = NotificationProcessor()
+    metadata_store = MetadataStore()
 
     orchestrator = Orchestrator(
         detector=detector,
+        metadata_store=metadata_store,
         processors=[notification_processor]
     )
 
     log("Starting object detection.")
 
+    # Trigger video file scan every 300 seconds or if the trigger file is availabe.
+    trigger_filename = config['object_detection']['trigger_file']
+    count = 0
     while True:
-        orchestrator.loop()
+        if os.path.exists(trigger_filename):
+            os.remove(trigger_filename)
+            count += 9999
+        else:
+            count += 1
+        if count > 300:
+            orchestrator.loop()
+            count = 0
         sleep(1)

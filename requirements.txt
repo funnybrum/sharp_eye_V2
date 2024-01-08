@@ -18,8 +18,10 @@ influxdb==5.3.1
 matplotlib==3.8.2
 Pillow==10.2.0
 scipy==1.11.4
-torch==2.1.2
-torchvision==0.16.2
+# Install the CPU only torch. The non CPU-only has CUDA dependencies that result in +6GB image size.
+--find-links https://download.pytorch.org/whl/torch_stable.html
+torch==2.1.2+cpu
+torchvision==0.16.2+cpu
 tqdm==4.66.1
 protobuf==4.21.2
 
