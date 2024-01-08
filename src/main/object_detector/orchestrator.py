@@ -21,7 +21,7 @@ class Orchestrator(object):
 
     def loop(self):
         for video_file in sorted(glob.glob('/snapshots/**/*.mp4')):
-            if self._metadata_store.get_metadata(video_file):
+            if self._metadata_store.get_metadata(video_file) is not None:
                 continue
 
             frames_with_objects = self._process_video_file(video_file)
@@ -42,7 +42,7 @@ class Orchestrator(object):
           - 'confidence' containing the confidence value
           - 'ymin', 'ymax', 'xmin', 'xmax' specifying the object bounding box in the frame
         """
-        log("Processing %s" % os.path.split(video_file)[-2:])
+        log("Processing %s" % video_file)
         frames = 0
         frames_with_objects = []
         start = time()
@@ -62,6 +62,6 @@ class Orchestrator(object):
                 })
 
         log("Processed %s with %s frames in %d seconds" % (
-            os.path.split(video_file)[-2:], frames, time() - start))
+            video_file, frames, time() - start))
 
         return frames_with_objects

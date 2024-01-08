@@ -60,7 +60,7 @@ class MetadataStore(object):
         scores = self._get_objects_scores(frames_with_objects)
         key = self._get_video_file_metadata_key(video_file)
         if key in self._metadata:
-            raise RuntimeError("Duplicate metadata for %s is not supported." % video_file)
+            raise RuntimeError("Duplicate metadata for %s is not supported." % key)
         self._metadata[key] = scores
         self._dump_metadata(video_file, {key: scores})
 
