@@ -15,6 +15,18 @@ from admin import server_webapp
 from admin.view.login import requires_auth
 
 
+def _has_animal(objects):
+    if not objects:
+        return False
+    return 'person' not in objects and ('dog' in objects or 'cat' in objects or 'bird' in objects)
+
+
+def _has_person(objects):
+    if not objects:
+        return False
+    return 'person' in objects
+
+
 def get_gallery_items(camera_filter, object_filter):
     metadata = MetadataStore()
     all_movies = []
@@ -25,11 +37,10 @@ def get_gallery_items(camera_filter, object_filter):
                 objects = metadata.get_metadata(video_filename)
                 if object_filter == 'any' and not objects:
                     continue
-                if object_filter == 'person' and (objects is None or 'person' not in objects):
+                if object_filter == 'person' and not _has_person(objects):
                     continue
-                if object_filter == 'animal' and (objects is None or not ('dog' in objects or 'cat' in objects or 'bird' in objects)):
+                if object_filter == 'animal' and not _has_animal(objects):
                     continue
-                print(objects)
                 all_movies.append(video_filename)
 
     def __gen_sort_key(filename):
