@@ -9,15 +9,28 @@ from flask import (
 from werkzeug.utils import safe_join
 
 from lib import config
+from lib.metadata_store import MetadataStore
 from admin import server_webapp
 
 from admin.view.login import requires_auth
 
 
-def get_gallery_items():
+def get_gallery_items(camera_filter, object_filter):
+    metadata = MetadataStore()
     all_movies = []
     for root, dirs, files in os.walk(config['snapshots']['location']):
-        all_movies.extend([os.path.join(root, f) for f in files if f.endswith("mp4")])
+        for video_filename in [os.path.join(root, f) for f in files if f.endswith("mp4")]:
+            camera = os.path.split(os.path.dirname(video_filename))[-1]
+            if camera_filter == 'all' or camera == camera_filter:
+                objects = metadata.get_metadata(video_filename)
+                if object_filter == 'any' and not objects:
+                    continue
+                if object_filter == 'person' and (objects is None or 'person' not in objects):
+                    continue
+                if object_filter == 'animal' and (objects is None or not ('dog' in objects or 'cat' in objects or 'bird' in objects)):
+                    continue
+                print(objects)
+                all_movies.append(video_filename)
 
     def __gen_sort_key(filename):
         # 2022-06-05-05-37-40788.mp4
@@ -59,11 +72,19 @@ def get_gallery_items():
 @server_webapp.route('/gallery')
 @requires_auth
 def gallery():
-    data = get_gallery_items()
+    camera_filter = request.args.get("camera_filter")
+    if not camera_filter:
+        camera_filter = 'all'
+    object_filter = request.args.get("object_filter")
+    if not object_filter:
+        object_filter = 'any'
+    data = get_gallery_items(camera_filter, object_filter)
     return render_template('gallery.html',
                            content=data,
                            session_id=request.cookies.get("session_id"),
-                           prefix=request.host.replace("/gallery", ""))
+                           prefix=request.host.replace("/gallery", ""),
+                           camera_filter=camera_filter,
+                           object_filter=object_filter)
 
 
 @server_webapp.route("/movie/play/<path:filename>", methods=["GET"])
@@ -109,6 +130,8 @@ def download_movie(filename):
 @server_webapp.route("/movie/play_all/<path:date>", methods=["GET"])
 @requires_auth
 def play_all(date):
-    movies = get_gallery_items()[date]
+    camera_filter = request.args.get("camera_filter")
+    object_filter = request.args.get("object_filter")
+    movies = get_gallery_items(camera_filter, object_filter)[date]
     movies = ["/movie/play/" + m["path"] for m in reversed(movies)]
     return render_template('play_all.html', movies=movies)
