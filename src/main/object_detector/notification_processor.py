@@ -1,5 +1,6 @@
-from io import BytesIO
 import cv2
+from io import BytesIO
+from time import time
 
 import numpy
 
@@ -11,7 +12,8 @@ class NotificationProcessor(object):
     def __init__(self):
         self._objects_of_interest = config['notifications']['objects']
         self._scale_factor = config['notifications']['snapshot']['scale']
-        pass
+        self._last_message_to_topic_ts = {}
+        self._topic_suppression_time = config['notifications']['topic_suppression']
 
     def _pick_best_frame(self, frames_with_objects):
         # Pick the frame with highest confidence sum
@@ -65,7 +67,10 @@ class NotificationProcessor(object):
             message += "%s(%0.2f), " % (o['name'], o['confidence'])
         message = message[:-2] + '.'
 
-        _send_notification(message, image, topic)
+        if not self._is_topic_suppressed(topic):
+            _send_notification(message, image, topic)
+        self._register_topic_event(topic)
+
         # For debugging purposes - show frames instead of sending them through the notification service.
         # cv2.imshow(message, cv2.resize(frame['frame'], (0, 0), fx=0.5, fy=0.5))
         # cv2.waitKey(0)
@@ -78,3 +83,13 @@ class NotificationProcessor(object):
         for obj_type in sorted_obj_types:
             if obj_type in self._objects_of_interest:
                 return self._objects_of_interest[obj_type]['topic']
+
+    def _is_topic_suppressed(self, topic):
+        if topic not in self._last_message_to_topic_ts:
+            return False
+        if time() - self._last_message_to_topic_ts[topic] > self._topic_suppression_time[topic]:
+            return False
+        return True
+
+    def _register_topic_event(self, topic):
+        self._last_message_to_topic_ts[topic] = time()

@@ -24,5 +24,10 @@ notifications:
     bird:
       threshold: 0.5
       topic: object_motion_animal
+  topic_suppression:
+    # If multiple events are generated in smaller then the specified frame they will be considered as single
+    # motion event. This will generate single notification.
+    object_motion_person: 180
+    object_motion_animal: 0
   snapshot:
     scale: 0.5
