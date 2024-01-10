@@ -61,13 +61,9 @@ class MotionDetector(object):
         try:
             while True:
                 try:
-                    motion = self.check_next_frame()
+                    self.check_next_frame()
                 except Exception as e:
                     log('Got exception: %s' % repr(e))
-                    motion = None
-
-                if motion is not False:
-                    log('Camera "%s", frame %s, motion: %s' % (config['identifier'], self.frame_count, motion))
         except Exception as e:
             self.camera.stop()
             raise e
