@@ -18,9 +18,10 @@ class Orchestrator(object):
         self._metadata_store = metadata_store
         self._processors = processors
         self._confidence_threshold = config['object_detection']['confidence_threshold']
+        self._video_root = config['snapshots']['location']
 
     def loop(self):
-        for video_file in sorted(glob.glob('/snapshots/**/*.mp4')):
+        for video_file in sorted(glob.glob("%s/**/*.mp4" % self._video_root)):
             if self._metadata_store.get_metadata(video_file) is not None:
                 continue
 
