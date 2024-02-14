@@ -1,7 +1,7 @@
 description: Ultralytics YOLOv8m model trained on coco.yaml
 author: Ultralytics
 license: AGPL-3.0 https://ultralytics.com/license
-date: '2024-02-14T20:09:35.021566'
+date: '2024-02-14T21:32:40.723160'
 version: 8.0.237
 stride: 32
 task: detect
