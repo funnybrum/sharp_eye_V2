@@ -6,7 +6,6 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update
 RUN apt-get -y install apt-utils cron python3 python3-pip python3-opencv ffmpeg tzdata curl nano wget
 RUN apt-get -y install libmfx1 libmfx-tools libva-drm2 libva-x11-2 vainfo intel-media-va-driver-non-free ocl-icd-libopencl1
-RUN apt-get -y install --only-upgrade libigdgmm12
 
 RUN wget -q -O /tmp/tmp.deb https://github.com/intel/compute-runtime/releases/download/23.52.28202.14/libigdgmm12_22.3.11_amd64.deb \
   && dpkg -i /tmp/tmp.deb \
