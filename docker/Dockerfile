@@ -24,15 +24,7 @@ RUN wget -q -O /tmp/tmp.deb https://github.com/intel/compute-runtime/releases/do
   && dpkg -i /tmp/tmp.deb \
   && rm /tmp/tmp.deb
 
-RUN wget -q -O /tmp/tmp.deb https://github.com/intel/compute-runtime/releases/download/23.52.28202.14/intel-level-zero-gpu-dbgsym_1.3.28202.14_amd64.ddeb \
-  && dpkg -i /tmp/tmp.deb \
-  && rm /tmp/tmp.deb
-
 RUN wget -q -O /tmp/tmp.deb https://github.com/intel/compute-runtime/releases/download/23.52.28202.14/intel-opencl-icd_23.52.28202.14_amd64.deb \
-  && dpkg -i /tmp/tmp.deb \
-  && rm /tmp/tmp.deb
-
-RUN wget -q -O /tmp/tmp.deb https://github.com/intel/compute-runtime/releases/download/23.52.28202.14/intel-opencl-icd-dbgsym_23.52.28202.14_amd64.ddeb \
   && dpkg -i /tmp/tmp.deb \
   && rm /tmp/tmp.deb
 
