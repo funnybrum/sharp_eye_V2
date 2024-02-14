@@ -1,6 +1,6 @@
 import logging
 import os
-import torch
+from ultralytics import YOLO
 import warnings
 
 from lib import config
@@ -17,16 +17,18 @@ class Detector(object):
 
         base_path = os.path.dirname(os.path.abspath(__file__))
 
-        self._yolo = torch.hub.load(
-            os.path.join(base_path, config['yolo']['model_source']),
-            'custom',
-            os.path.join(base_path, config['yolo']['pretrained_model']),
-            source='local',
-            trust_repo=True,
-            skip_validation=True,
-            verbose=False)
+        self._yolo = YOLO(os.path.join(base_path, config['yolo']['pretrained_model']), task='detect')
 
     def detect(self, image):
-        yolo_result = self._yolo([image])
-        result = yolo_result.pandas().xyxy[0].to_dict(orient="records")
-        return result
+        yolo_result = self._yolo([image], verbose=False)[0]
+        objects = []
+        for box in yolo_result.boxes:
+            objects.append({
+                "name": yolo_result.names[box.cls[0].item()],
+                "confidence": round(box.conf[0].item(), 2),
+                "xmin": int(box.xyxy[0][0]),
+                "ymin": int(box.xyxy[0][1]),
+                "xmax": int(box.xyxy[0][2]),
+                "ymax": int(box.xyxy[0][3]),
+            })
+        return objects

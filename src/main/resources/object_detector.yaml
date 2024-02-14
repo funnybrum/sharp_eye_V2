@@ -3,8 +3,7 @@ extend: common.yaml
 identifier: object_detector
 
 yolo:
-  model_source: YOLOv7/WongKinYiu_yolov7_main
-  pretrained_model: YOLOv7/yolov7-tiny.pt
+  pretrained_model: yolov8m_openvino_model
 
 object_detection:
   # List of object types of interest with confidence threshold for alerting.
