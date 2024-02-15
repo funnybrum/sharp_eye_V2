@@ -54,6 +54,7 @@ if __name__ == '__main__':
         else:
             count += 1
         if count > 300:
-            orchestrator.loop()
+            while orchestrator.loop() > 0:
+                sleep(1)
             count = 0
         sleep(1)

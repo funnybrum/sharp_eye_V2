@@ -21,6 +21,7 @@ class Orchestrator(object):
         self._video_root = config['snapshots']['location']
 
     def loop(self):
+        unprocessed_files = 0
         for video_file in sorted(glob.glob("%s/**/*.mp4" % self._video_root)):
             if self._metadata_store.get_metadata(video_file) is not None:
                 continue
@@ -32,11 +33,16 @@ class Orchestrator(object):
                 input_metadata = None
 
             frames_with_objects = self._process_video_file(video_file, input_metadata)
+            if frames_with_objects is None:
+                unprocessed_files += 1
+                continue
 
             self._metadata_store.store_metadata(video_file, frames_with_objects)
             if frames_with_objects:
                 for processor in self._processors:
                     processor.process(video_file, frames_with_objects)
+
+        return unprocessed_files
 
     def _process_video_file(self, video_file, input_metadata):
         """
@@ -82,6 +88,10 @@ class Orchestrator(object):
                     'frame': frame,
                     'objects': objects
                 })
+
+        if frames == 0:
+            log(f"Failed to process {video_file}, is the file still being written to?")
+            return None
 
         log("Processed %s with %s frames in %d seconds" % (
             video_file, frames, time() - start))
@@ -143,14 +153,11 @@ class Orchestrator(object):
         return frame[roi_y:roi_y+roi_h, roi_x:roi_x+roi_w]
 
     def _map_object_coordinates(self, frame, roi, objects):
-        roi_x, roi_y, roi_w, roi_h = roi
-        x_offset = roi_x
-        y_offset = roi_y
-        # Scale seems to be working fine with 1, despite my not being able to find the explanation for that.
-        x_scale = 1
-        y_scale = 1
-        for object in objects:
-            object["xmin"] = object["xmin"] * x_scale + x_offset
-            object["xmax"] = object["xmax"] * x_scale + x_offset
-            object["ymin"] = object["ymin"] * y_scale + y_offset
-            object["ymax"] = object["ymax"] * y_scale + y_offset
+        # Image is passed in the default scale, so there is no scale factor. But there is offset because we are using
+        # a portion of the frame.
+        x_offset, y_offset, _, _ = roi
+        for obj in objects:
+            obj["xmin"] += x_offset
+            obj["xmax"] += x_offset
+            obj["ymin"] += y_offset
+            obj["ymax"] += y_offset
