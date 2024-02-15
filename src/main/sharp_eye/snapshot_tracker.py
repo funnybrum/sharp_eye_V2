@@ -119,7 +119,8 @@ class SnapshotTracker(object):
             # these will still provide valuable information on what was moving and how it exited the surveillance area.
             frame_files = in_files[:-int(0.5 * config['event_tracker']['min_no_motion_gap'])]
 
-        # TODO Check if this if can be FALSE in some cases and if not - remove it.
+        # In rare cases we can end up with no frames here. I.e. 121 frames sequence, 120 were a partial sequence,
+        # 1 left for the final sequence, but we remove half of the 'min_no_motion_gap' and end up wiht no frames.
         if len(frame_files) > 0:
             # Prepare list of images to be converted to a video file
             with open(video_in_txt_file, 'w') as out:
@@ -172,8 +173,6 @@ class SnapshotTracker(object):
                 time.time() - start_time,
                 len(frame_files)
             ))
-        else:
-            log("TODO check - the if can be false")
 
         for f in in_files:
             os.remove(f)
