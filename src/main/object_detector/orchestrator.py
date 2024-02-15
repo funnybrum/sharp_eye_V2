@@ -70,9 +70,13 @@ class Orchestrator(object):
 
             # Perform object detection
             objects = self._detector.detect(roi_image)
+
+            # Identify objects that are with sufficient confidence.
             objects = [o for o in objects if o['confidence'] >= self._confidence_threshold]
+
+            # Map ROI image coordinates to frame coordinates
             self._map_object_coordinates(frame, roi, objects)
-            cv2.rectangle(frame, (roi[0], roi[1]), (roi[0] + roi[2], roi[1] + roi[3]), (0, 0 , 255), 2)
+
             if objects:
                 frames_with_objects.append({
                     'frame': frame,
