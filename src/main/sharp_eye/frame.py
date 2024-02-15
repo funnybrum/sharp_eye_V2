@@ -61,3 +61,16 @@ class Frame:
         cv2.putText(motion_frame, stamp, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2)
 
         return motion_frame
+
+    def get_motion_area(self):
+        """
+        Get the motion area in the original frame.
+        :return: x, y, w, h - x and y are the lower left corner of the rectangle, w and h are the width and height.
+        """
+        x, y = self.motion_pos
+        w, h = self.motion_rect
+        x = int(x * 4)
+        y = int(y * 4)
+        w = int(w * 4)
+        h = int(h * 4)
+        return x, y, w, h

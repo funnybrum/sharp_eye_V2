@@ -3,6 +3,7 @@ import os
 import shutil
 import threading
 import time
+import json
 
 from datetime import datetime
 from subprocess import Popen
@@ -29,6 +30,7 @@ class SnapshotTracker(object):
         if not os.path.exists(self._video_folder):
             os.mkdir(self._video_folder)
         self._snapshot_files = []
+        self._snapshot_meta = []
 
     def process_frame(self, frame):
         self._frames[frame.index] = frame
@@ -54,16 +56,19 @@ class SnapshotTracker(object):
 
         for index in iter(self._frames):
             self._snapshot_files.append(self._save_frame(index))
+            self._snapshot_meta.append(self._generate_frame_metadata(index))
 
         if len(self._snapshot_files) >= 120:
             self._create_motion_video(True)
             self._snapshot_files = []
+            self._snapshot_meta = []
 
         self._frames = {}
 
     def on_sequence_end(self):
         self._create_motion_video(False)
         self._snapshot_files = []
+        self._snapshot_meta = []
 
     def _save_frame(self, frame_index):
         """
@@ -76,6 +81,23 @@ class SnapshotTracker(object):
         cv2.imwrite(snapshot_filename, frame.get_motion_frame())
         return snapshot_filename
 
+    def _generate_frame_metadata(self, frame_index):
+        """
+        Persist a frame on the tmp file system. This will likely (depending on the config)
+        be used to create a motion video file later on.
+        """
+        frame = self._frames[frame_index]
+        x, y, w, h = frame.get_motion_area()
+        metadata = {
+            "motion": {
+                "x": x,
+                "y": y,
+                "w": w,
+                "h": h
+            }
+        }
+        return metadata
+
     def _create_motion_video(self, partial):
         video_out_file = os.path.join(
             self._video_folder,
@@ -84,11 +106,11 @@ class SnapshotTracker(object):
 
         compression_thread = threading.Thread(
             target=self._compression_thread,
-            args=(video_out_file, self._snapshot_files, partial))
+            args=(video_out_file, self._snapshot_files, self._snapshot_meta, partial))
         compression_thread.start()
 
     @staticmethod
-    def _compression_thread(output_file, in_files, partial):
+    def _compression_thread(output_file, in_files, meta, partial):
         video_in_txt_file = output_file[:-3] + "txt"
         if partial:
             frame_files = in_files
@@ -140,6 +162,10 @@ class SnapshotTracker(object):
             start_time = time.time()
             dev_null = open(os.devnull, 'wb')
             Popen(cmd.split(' '), stdin=dev_null, stdout=dev_null, stderr=dev_null).wait()
+
+            # Store the metadata
+            with open(output_file[:-3] + "json", 'w') as out:
+                json.dump(meta, out)
 
             log("Motion video %s created in %.1ds with %d frames" % (
                 os.path.split(output_file)[-1],
