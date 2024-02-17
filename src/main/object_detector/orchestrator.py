@@ -66,7 +66,10 @@ class Orchestrator(object):
                 break
 
             # Generate ROI sub-frame
-            roi = self._get_region_of_interest(frame, input_metadata[frames])
+            if input_metadata:
+                roi = self._get_region_of_interest(frame, input_metadata[frames])
+            else:
+                roi = (0, 0, frame.shape[1], frame.shape[0])
             frames += 1
 
             if roi is None:
