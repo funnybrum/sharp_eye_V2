@@ -3,12 +3,13 @@ extend: common.yaml
 identifier: object_detector
 
 yolo:
-  pretrained_model: yolov8n_openvino_model
+  pretrained_model: yolov8m_openvino_model
 
 object_detection:
   # List of object types of interest with confidence threshold for alerting.
   confidence_threshold: 0.5
   metadata_threshold: 0.25
+  detection_count_threshold: 5
 
 notifications:
   objects:

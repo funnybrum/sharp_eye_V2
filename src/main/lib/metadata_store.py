@@ -31,20 +31,9 @@ class MetadataStore(object):
             with open(metadata_file) as in_file:
                 self._metadata.update(yaml.safe_load(in_file))
 
-    def _get_objects_scores(self, frames_with_objects):  # noqa
-        scores = {}
-        for f in frames_with_objects:
-            for obj in f['objects']:
-                obj_type = obj['name']
-                obj_score = obj['confidence']
-                if obj_type not in scores or scores[obj_type] < obj_score:
-                    scores[obj_type] = round(obj_score, 2)
-
-        return scores
-
     def _get_adjusted_objects_scores(self, frames_with_objects):  # noqa
         scores = {}
-        confidence_threshold = config['object_detection']['metadata_threshold']
+        detection_counts = {}
 
         for f in frames_with_objects:
             for obj in f['objects']:
@@ -52,12 +41,18 @@ class MetadataStore(object):
                 obj_score = obj['confidence']
                 if obj_type not in scores:
                     scores[obj_type] = 0
+                    detection_counts[obj_type] = 0
                 scores[obj_type] += obj_score
+                detection_counts[obj_type] += 1
 
         for obj_type, score in scores.items():
             scores[obj_type] = round(score / len(frames_with_objects), 2)
 
-        scores = {k: v for k, v in scores.items() if v >= confidence_threshold}
+        confidence_threshold = config['object_detection']['metadata_threshold']
+        detection_count_threshold = config['object_detection']['detection_count_threshold']
+        scores = {k: v for k, v in scores.items() if
+                  v >= confidence_threshold and
+                  detection_counts[k] >= detection_count_threshold}
 
         return scores
 

@@ -26,6 +26,13 @@ def _has_person(objects):
         return False
     return 'person' in objects
 
+def _has_non_person_objects(objects):
+    if not objects:
+        return False
+    if 'person' in objects:
+        return False
+    return True
+
 
 def get_gallery_items(camera_filter, object_filter):
     metadata = MetadataStore()
@@ -41,7 +48,7 @@ def get_gallery_items(camera_filter, object_filter):
                     continue
                 if object_filter == 'animal' and not _has_animal(objects):
                     continue
-                if object_filter == 'non-person' and objects and not _has_person(objects):
+                if object_filter == 'non-person' and not _has_non_person_objects(objects):
                     continue
                 all_movies.append(video_filename)
 
@@ -67,12 +74,14 @@ def get_gallery_items(camera_filter, object_filter):
         day = tokens[-4]
         hour = tokens[-3]
         minute = tokens[-2]
+        objects = list(metadata.get_metadata(movie).keys())
 
         key = "%s-%s-%s" % (year, month, day)
         entry = {
             "path": movie[len(config['snapshots']['location'])+1:],
             "title": "%s:%s" % (hour, minute),
-            "size": "{:.1f}MB".format(os.stat(movie).st_size / 1000000)
+            "size": "{:.1f}MB".format(os.stat(movie).st_size / 1000000),
+            "objects": objects
         }
         if key not in result:
             result[key] = [entry]
