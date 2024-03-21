@@ -41,8 +41,8 @@ def get_gallery_items(camera_filter, object_filter):
                     continue
                 if object_filter == 'animal' and not _has_animal(objects):
                     continue
-                if object_filter == 'non-person':
-                    return objects and not _has_person()
+                if object_filter == 'non-person' and objects and not _has_person():
+                    continue
                 all_movies.append(video_filename)
 
     def __gen_sort_key(filename):
