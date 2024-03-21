@@ -23,7 +23,7 @@ class NotificationProcessor(object):
             for obj in f['objects']:
                 obj_name = obj['name']
                 obj_confidence = obj['confidence']
-                if obj_name in self._objects_of_interest or \
+                if obj_name in self._objects_of_interest and \
                    obj_confidence >= self._objects_of_interest[obj_name]['threshold']:
                     if not obj_name in score_sum:
                         score_sum[obj_name] = 0

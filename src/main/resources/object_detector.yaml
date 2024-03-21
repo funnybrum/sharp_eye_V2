@@ -8,6 +8,7 @@ yolo:
 object_detection:
   # List of object types of interest with confidence threshold for alerting.
   confidence_threshold: 0.5
+  metadata_threshold: 0.25
 
 notifications:
   objects:
