@@ -31,31 +31,6 @@ class MetadataStore(object):
             with open(metadata_file) as in_file:
                 self._metadata.update(yaml.safe_load(in_file))
 
-    def _get_adjusted_objects_scores(self, frames_with_objects):  # noqa
-        scores = {}
-        detection_counts = {}
-
-        for f in frames_with_objects:
-            for obj in f['objects']:
-                obj_type = obj['name']
-                obj_score = obj['confidence']
-                if obj_type not in scores:
-                    scores[obj_type] = 0
-                    detection_counts[obj_type] = 0
-                scores[obj_type] += obj_score
-                detection_counts[obj_type] += 1
-
-        for obj_type, score in scores.items():
-            scores[obj_type] = round(score / len(frames_with_objects), 2)
-
-        confidence_threshold = config['object_detection']['metadata_threshold']
-        detection_count_threshold = config['object_detection']['detection_count_threshold']
-        scores = {k: v for k, v in scores.items() if
-                  v >= confidence_threshold and
-                  detection_counts[k] >= detection_count_threshold}
-
-        return scores
-
     def _get_metadata_filename(self, video_file):  # noqa
         metadata_filename = os.path.basename(video_file)[:10] + "-meta.yaml"
         return os.path.join(self._metadata_folder, metadata_filename)
@@ -70,8 +45,7 @@ class MetadataStore(object):
         file_key = os.path.basename(video_file)[:-4]
         return '%s_%s' % (camera, file_key)
 
-    def store_metadata(self, video_file, frames_with_objects):
-        scores = self._get_adjusted_objects_scores(frames_with_objects)
+    def store_metadata(self, video_file, scores):
         key = self._get_video_file_metadata_key(video_file)
         if key in self._metadata:
             raise RuntimeError("Duplicate metadata for %s is not supported." % key)

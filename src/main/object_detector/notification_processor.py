@@ -16,37 +16,30 @@ class NotificationProcessor(object):
         self._last_message_to_topic_ts = {}
         self._topic_suppression_time = config['notifications']['topic_suppression']
 
-    def _pick_best_frame(self, frames_with_objects):
-        # Find the object with highest confidence score
-        score_sum = {}
-        for f in frames_with_objects:
-            for obj in f['objects']:
-                obj_name = obj['name']
-                obj_confidence = obj['confidence']
-                if obj_name in self._objects_of_interest and \
-                   obj_confidence >= self._objects_of_interest[obj_name]['threshold']:
-                    if not obj_name in score_sum:
-                        score_sum[obj_name] = 0
-                    score_sum[obj_name] += obj_confidence
-
-        if not score_sum:
+    def _pick_best_frame(self, scores, frames_with_objects):
+        if not scores:
             return None, None
 
-        top_object = max(score_sum, key=score_sum.get)
+        object_type_of_interest = max(scores, key=scores.get)
+        object_score = scores[object_type_of_interest]
 
-        # Pick the frame with highest confidence sum for the top object
-        frame_score = []
+        if object_type_of_interest not in self._objects_of_interest or \
+                object_score < self._objects_of_interest[object_type_of_interest]['threshold']:
+            return None, None
+
+        # Find the frame with the highest confidence score for the object of interest.
+        best_score = 0
+        best_frame = None
         for f in frames_with_objects:
-            score = 0
-            for obj in f['objects']:
-                if obj['name'] == top_object:
-                    score += obj['confidence']
-            frame_score.append(score)
+            frame_score = sum([obj['confidence'] for obj in f['objects'] if obj['name'] == object_type_of_interest])
+            if frame_score > best_score:
+                best_score = frame_score
+                best_frame = f
 
-        return top_object, frames_with_objects[numpy.argmax(frame_score)]
+        return object_type_of_interest, best_frame
 
-    def process(self, video_file, frames_with_objects):
-        object_name, notification_frame = self._pick_best_frame(frames_with_objects)
+    def process(self, video_file, frames_with_objects, scores):
+        object_name, notification_frame = self._pick_best_frame(frames_with_objects, scores)
         if not notification_frame:
             return
         self._send_notification(object_name, notification_frame)

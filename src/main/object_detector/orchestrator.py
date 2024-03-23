@@ -37,10 +37,11 @@ class Orchestrator(object):
                 unprocessed_files += 1
                 continue
 
-            self._metadata_store.store_metadata(video_file, frames_with_objects)
+            scores = self._get_adjusted_objects_scores(frames_with_objects)
+            self._metadata_store.store_metadata(video_file, scores)
             if frames_with_objects:
                 for processor in self._processors:
-                    processor.process(video_file, frames_with_objects)
+                    processor.process(video_file, scores, frames_with_objects)
 
         return unprocessed_files
 
@@ -164,3 +165,28 @@ class Orchestrator(object):
             obj["xmax"] += x_offset
             obj["ymin"] += y_offset
             obj["ymax"] += y_offset
+
+    def _get_adjusted_objects_scores(self, frames_with_objects):  # noqa
+        scores = {}
+        detection_counts = {}
+
+        for f in frames_with_objects:
+            for obj in f['objects']:
+                obj_type = obj['name']
+                obj_score = obj['confidence']
+                if obj_type not in scores:
+                    scores[obj_type] = 0
+                    detection_counts[obj_type] = 0
+                scores[obj_type] += obj_score
+                detection_counts[obj_type] += 1
+
+        for obj_type, score in scores.items():
+            scores[obj_type] = round(score / len(frames_with_objects), 2)
+
+        confidence_threshold = config['object_detection']['metadata_threshold']
+        detection_count_threshold = config['object_detection']['detection_count_threshold']
+        scores = {k: v for k, v in scores.items() if
+                  v >= confidence_threshold and
+                  detection_counts[k] >= detection_count_threshold}
+
+        return scores
