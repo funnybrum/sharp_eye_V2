@@ -17,26 +17,36 @@
             {% endif %}
             {% if partition_state['state'] == "disarmed" %}
                 <div style="display: inline-block;">
-                    <input type="submit" formaction="/hss/control/{{ partition }}/arm" value="arm" style="margin:4px; width: 50px"/>
+                    <input type="submit" formaction="/hss/control/partition/{{ partition }}/arm" value="arm" style="margin:4px; width: 50px"/>
                 </div>
             {% else %}
                 <div style="display: inline-block;">
-                    <input type="submit" formaction="/hss/control/{{ partition }}/disarm" value="disarm" style="margin:4px; width: 50px"/>
+                    <input type="submit" formaction="/hss/control/partition/{{ partition }}/disarm" value="disarm" style="margin:4px; width: 50px"/>
                 </div>
             {% endif %}
             <br><br>
             <div style="width: 50; text-align: left; display: inline-block;">Mode</div>
             {%- if partition_state['mode'] == 'auto' -%}
-                <input type="submit" formaction="/hss/control/{{ partition }}/manual" value="manual" style="margin:4px;"/>
-                <input type="submit" formaction="/hss/control/{{ partition }}/auto" value="auto" style="margin:4px; color: #30A010;"/>
+                <input type="submit" formaction="/hss/control/partition/{{ partition }}/manual" value="manual" style="margin:4px;"/>
+                <input type="submit" formaction="/hss/control/partition/{{ partition }}/auto" value="auto" style="margin:4px; color: #30A010;"/>
             {%- else -%}
-                <input type="submit" formaction="/hss/control/{{ partition }}/manual" value="manual" style="margin:4px; color: #30A010;"/>
-                <input type="submit" formaction="/hss/control/{{ partition }}/auto" value="auto" style="margin:4px;"/>
+                <input type="submit" formaction="/hss/control/partition/{{ partition }}/manual" value="manual" style="margin:4px; color: #30A010;"/>
+                <input type="submit" formaction="/hss/control/partition/{{ partition }}/auto" value="auto" style="margin:4px;"/>
             {%- endif -%}
         </form>
     </fieldset>
     <br>
     {% endfor %}
+    <fieldset style='width: 175;text-align: center;'>
+        <legend>Alarm</legend>
+        <button style="margin:4px; width: 120px" onclick="fetch('/hss/control/alarm/on?duration=0.2')">Beep</button>
+        <br>
+        <button style="margin:4px; width: 120px" onclick="fetch('/hss/control/alarm/on?duration=10')">Alert</button>
+        <br>
+        <button style="margin:4px; width: 120px" onclick="fetch('/hss/control/alarm/off')">Silence</button>
+        <br>
+    </fieldset>
+    <br>
     <fieldset style='width: 185;text-align: center'>
         <form action="/">
             <button type="submit" style="margin-top: 10px; width: 80%" formmethod="get">Home</button>

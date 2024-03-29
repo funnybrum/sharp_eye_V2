@@ -22,6 +22,7 @@ from lib.metadata_store import MetadataStore
 from object_detector.orchestrator import Orchestrator
 from object_detector.yolo import Detector
 from object_detector.notification_processor import NotificationProcessor
+from object_detector.perimeter_partition_processor import PerimeterPartitionProcessor
 
 if __name__ == '__main__':
     try:
@@ -34,12 +35,13 @@ if __name__ == '__main__':
     log("Models loaded.")
 
     notification_processor = NotificationProcessor()
+    perimeter_partition_processor = PerimeterPartitionProcessor()
     metadata_store = MetadataStore()
 
     orchestrator = Orchestrator(
         detector=detector,
         metadata_store=metadata_store,
-        processors=[notification_processor]
+        processors=[perimeter_partition_processor, notification_processor]
     )
 
     log("Starting object detection.")

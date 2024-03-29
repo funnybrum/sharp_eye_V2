@@ -1,3 +1,7 @@
+from datetime import (
+    datetime,
+    timedelta,
+)
 from threading import Thread
 
 from flask import Flask
@@ -36,7 +40,15 @@ class Server(Thread):
         server_webapp.jinja_env.trim_blocks = True
         server_webapp.jinja_env.lstrip_blocks = True
 
+        self.run_job("perimeter_partition_check")
+        self.run_job("mqtt_client_check_admin")
+        self.run_job("bell_check")
         server_webapp.run(debug=False, host=config['host'], port=config['port'], threaded=True)
+
+    @staticmethod
+    def run_job(job_id, delay=0):
+        job = scheduler.get_job(id=job_id)
+        job.modify(next_run_time=datetime.now() + timedelta(seconds=delay))
 
     @classmethod
     def startup(cls):

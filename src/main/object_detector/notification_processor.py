@@ -38,8 +38,8 @@ class NotificationProcessor(object):
 
         return object_type_of_interest, best_frame
 
-    def process(self, video_file, frames_with_objects, scores):
-        object_name, notification_frame = self._pick_best_frame(frames_with_objects, scores)
+    def process(self, video_file, scores, frames_with_objects):
+        object_name, notification_frame = self._pick_best_frame(scores, frames_with_objects)
         if not notification_frame:
             return
         self._send_notification(object_name, notification_frame)

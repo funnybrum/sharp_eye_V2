@@ -1,51 +1,36 @@
 import os
+if not os.environ.get('APP_CONFIG'):
+    os.environ['APP_CONFIG'] = '/brum/dev/sharp_eye/src/main/resources/admin.yaml'
 
 from time import sleep
 
 from flask import render_template
 from flask import (
     abort,
-    redirect
+    redirect,
+    request
 )
 from paho.mqtt.client import Client, MQTTv311
 
 from lib import config
 from lib.log import log
 from lib.hss import HssZoneState
-from admin.view.login import requires_auth
 from admin import (
     server_webapp,
     scheduler
 )
+from admin.hss import HSS_STATE, PERIMETER_PARTITION, HssMode
+from admin.hss.bell import (
+    trigger_sound_alert,
+    silence_alert
+)
+from admin.hss.perimeter_partition import (
+    register_motion,
+    arm,
+    disarm
+)
+from admin.view.login import requires_auth
 
-
-class HssMode:
-    AUTO = "auto"
-    MANUAL = "manual"
-
-
-HSS_STATE = {
-    "1ST_FLOOR": {
-        "state": None,
-        "mode": HssMode.MANUAL,
-        "name": "Floor 1"
-    },
-    "2ND_FLOOR": {
-        "state": None,
-        "mode": HssMode.MANUAL,
-        "name": "Floor 2"
-    },
-    "SERVICE_ROOM": {
-        "state": None,
-        "mode": HssMode.MANUAL,
-        "name": "Service room"
-    },
-    "WORKSHOP": {
-        "state": None,
-        "mode": HssMode.MANUAL,
-        "name": "Workshop"
-    }
-}
 
 mqtt_client = Client(
     client_id="master_mind_" + os.urandom(8).hex(),
@@ -59,21 +44,51 @@ def get_hss():
     return render_template('hss.html', hss_state=HSS_STATE)
 
 
-@server_webapp.route('/hss/control/<partition>/<action>', methods=['GET'])
+@server_webapp.route('/hss/control/partition/<partition>/<action>', methods=['GET'])
 @requires_auth
 def get_hss_control_partition_action(partition, action):
     if partition not in HSS_STATE or action not in ['arm', 'disarm', HssMode.AUTO, HssMode.MANUAL]:
         return abort(403)
 
     if action in ['arm', 'disarm']:
-        mqtt_client.publish('paradox/control/partitions/%s' % partition, action)
-        sleep(2)
+        if partition not in [PERIMETER_PARTITION]:
+            mqtt_client.publish('paradox/control/partitions/%s' % partition, action)
+            sleep(0.5)
+        else:
+            # This is the perimeter partition
+            if action == 'arm':
+                arm()
+            else:
+                disarm()
 
     if action in [HssMode.MANUAL, HssMode.AUTO]:
         HSS_STATE[partition]['mode'] = action
 
     return redirect('/hss')
 
+
+@server_webapp.route('/hss/control/alarm/<action>', methods=['GET'])
+@requires_auth
+def get_hss_control_alarm_action(action):
+    if action not in ['on', 'off']:
+        return abort(403)
+
+    if action == 'on':
+        duration = request.args.get("duration", 1)
+        # import pdb; pdb.set_trace()
+        trigger_sound_alert(float(duration))
+        print(float(duration))
+    elif action == 'off':
+        silence_alert()
+        pass
+
+    return redirect('/hss')
+
+
+@server_webapp.route('/hss/control/motion', methods=['GET'])
+def get_hss_control_motion():
+    register_motion()
+    return ''
 
 def on_message(client, userdata, message):
     payload = str(message.payload.decode("utf-8"))

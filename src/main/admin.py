@@ -30,6 +30,10 @@ from admin.view import (  # noqa
     hss,
     gallery
 )
+from admin.hss import (  # noqa
+    bell,
+    perimeter_partition
+)
 import admin.supervisor as supervisor
 from lib.quicklock import lock
 from time import sleep
