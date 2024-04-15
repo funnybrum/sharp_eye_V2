@@ -33,3 +33,9 @@ camera5:
     active: True
     stream_uri: IN_SECRETS_YAML
     command: "APP_CONFIG=./resources/cam5.yaml python3 sharp_eye.py"
+
+camera6:
+    name: Camera 6
+    active: True
+    stream_uri: IN_SECRETS_YAML
+    command: "APP_CONFIG=./resources/cam6.yaml python3 sharp_eye.py"

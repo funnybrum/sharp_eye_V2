@@ -34,6 +34,9 @@ camera4:
 camera5:
     snapshot: /tmp/cam5.bmp
 
+camera6:
+    snapshot: /tmp/cam6.bmp
+
 # List of all cameras.
 cameras:
   - camera1
@@ -41,6 +44,7 @@ cameras:
   - camera3
   - camera4
   - camera5
+  - camera6
 
 snapshots:
     # Location for motion videos. A subfolder named on the camera identifier will be created. I.e.
