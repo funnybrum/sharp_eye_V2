@@ -74,7 +74,7 @@ def get_gallery_items(camera_filter, object_filter):
         day = tokens[-4]
         hour = tokens[-3]
         minute = tokens[-2]
-        objects = list(metadata.get_metadata(movie).keys())
+        objects = list(metadata.get_metadata(movie).keys()) if metadata.get_metadata(movie) else []
 
         key = "%s-%s-%s" % (year, month, day)
         entry = {
