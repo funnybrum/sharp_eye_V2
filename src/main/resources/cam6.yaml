@@ -5,8 +5,8 @@ identifier: camera6
 motion:
   mask: resources/img/cam6_mask.png
 
-#automation:
-#  on_motion_sequence_script: /sharp_eye/resources/scripts/cam5_on_motion.sh
+automation:
+  on_motion_frame_script: /sharp_eye/resources/scripts/cam6_on_motion.sh
 
 snapshot:
   text: [ 128, 255, 128 ]
