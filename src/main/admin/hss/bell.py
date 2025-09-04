@@ -9,6 +9,7 @@ from lib import config
 from lib.log import log
 
 from admin import scheduler
+from lib.notifier_client import send_notification
 
 
 class Bell(Thread):
@@ -52,6 +53,11 @@ class Bell(Thread):
 
     def alert(self, duration_seconds):
         self._bell_end_ts = time() + duration_seconds
+        try:
+            message = "Alarm triggered for %s seconds" % duration_seconds
+            send_notification(message, None, "arm_disarm")
+        except:  # noqa
+            pass
         self.loop()
 
     def silence(self):

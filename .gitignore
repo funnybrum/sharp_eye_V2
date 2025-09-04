@@ -4,4 +4,5 @@ tests/*.txt
 venv
 venv2
 env
+.venv
 src/main/resources/secrets.yaml
