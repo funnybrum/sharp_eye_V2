@@ -1,31 +1,13 @@
-FROM ubuntu:22.04
-MAINTAINER funnybrum@gmial.com
+FROM ubuntu:24.04
+LABEL maintainer="funnybrum@gmail.com"
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update
-RUN apt-get -y install apt-utils cron python3 python3-pip python3-opencv ffmpeg tzdata curl nano wget
-RUN apt-get -y install libmfx1 libmfx-tools libva-drm2 libva-x11-2 vainfo intel-media-va-driver-non-free ocl-icd-libopencl1
-
-RUN wget -q -O /tmp/tmp.deb https://github.com/intel/compute-runtime/releases/download/23.52.28202.14/libigdgmm12_22.3.11_amd64.deb \
-  && dpkg -i /tmp/tmp.deb \
-  && rm /tmp/tmp.deb
-
-RUN wget -q -O /tmp/tmp.deb https://github.com/intel/intel-graphics-compiler/releases/download/igc-1.0.15770.11/intel-igc-core_1.0.15770.11_amd64.deb \
-  && dpkg -i /tmp/tmp.deb \
-  && rm /tmp/tmp.deb
-
-RUN wget -q -O /tmp/tmp.deb https://github.com/intel/intel-graphics-compiler/releases/download/igc-1.0.15770.11/intel-igc-opencl_1.0.15770.11_amd64.deb \
-  && dpkg -i /tmp/tmp.deb \
-  && rm /tmp/tmp.deb
-
-RUN wget -q -O /tmp/tmp.deb https://github.com/intel/compute-runtime/releases/download/23.52.28202.14/intel-level-zero-gpu_1.3.28202.14_amd64.deb \
-  && dpkg -i /tmp/tmp.deb \
-  && rm /tmp/tmp.deb
-
-RUN wget -q -O /tmp/tmp.deb https://github.com/intel/compute-runtime/releases/download/23.52.28202.14/intel-opencl-icd_23.52.28202.14_amd64.deb \
-  && dpkg -i /tmp/tmp.deb \
-  && rm /tmp/tmp.deb
+RUN apt-get update && apt-get -y install \
+    apt-utils cron python3 python3-pip python3-opencv ffmpeg tzdata curl nano wget \
+    libvpl2 libmfx-gen1.2 libva-drm2 libva-x11-2 vainfo intel-media-va-driver-non-free \
+    ocl-icd-libopencl1 intel-opencl-icd \
+  && rm -rf /var/lib/apt/lists/*
 
 # Cron setup
 ADD docker/crontab /etc/cron.d/schedule
@@ -35,7 +17,7 @@ RUN touch /var/log/cron.log
 
 # Python scripts
 ADD requirements.txt /
-RUN pip3 install -r requirements.txt
+RUN pip3 install --break-system-packages -r requirements.txt
 ADD src/main /sharp_eye
 
 # Set the correct timezone
