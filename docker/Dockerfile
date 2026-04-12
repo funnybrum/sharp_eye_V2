@@ -2,6 +2,7 @@ FROM ubuntu:24.04
 LABEL maintainer="funnybrum@gmail.com"
 
 ENV DEBIAN_FRONTEND=noninteractive
+ENV YOLO_CONFIG_DIR=/tmp/Ultralytics
 
 RUN apt-get update && apt-get -y install \
     apt-utils cron python3 python3-pip python3-opencv ffmpeg tzdata curl nano wget \
