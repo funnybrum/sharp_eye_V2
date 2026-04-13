@@ -27,6 +27,8 @@ class Orchestrator(object):
             mask_path = os.path.join(mask_dir, '%s_mask.png' % cam_id.replace('camera', 'cam'))
             if os.path.exists(mask_path):
                 self._masks[cam_id] = cv2.imread(mask_path, cv2.IMREAD_GRAYSCALE)
+            else:
+                log("No mask found for %s at %s" % (cam_id, mask_path))
 
     def loop(self):
         unprocessed_files = 0
