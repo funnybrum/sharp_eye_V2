@@ -1,5 +1,6 @@
 import glob
 import json
+import os
 from time import time
 
 import cv2
@@ -19,6 +20,13 @@ class Orchestrator(object):
         self._processors = processors
         self._confidence_threshold = config['object_detection']['confidence_threshold']
         self._video_root = config['snapshots']['location']
+
+        self._masks = {}
+        mask_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'resources', 'img')
+        for cam_id in config.get('cameras', []):
+            mask_path = os.path.join(mask_dir, '%s_mask.png' % cam_id.replace('camera', 'cam'))
+            if os.path.exists(mask_path):
+                self._masks[cam_id] = cv2.imread(mask_path, cv2.IMREAD_GRAYSCALE)
 
     def loop(self):
         unprocessed_files = 0
@@ -57,6 +65,7 @@ class Orchestrator(object):
           - 'ymin', 'ymax', 'xmin', 'xmax' specifying the object bounding box in the frame
         """
         log("Processing %s" % video_file)
+        camera_id = os.path.basename(os.path.dirname(video_file))
         frames = 0
         frames_with_objects = []
         start = time()
@@ -86,6 +95,9 @@ class Orchestrator(object):
 
             # Map ROI image coordinates to frame coordinates
             self._map_object_coordinates(frame, roi, objects)
+
+            # Filter out objects whose center falls outside the motion detection mask
+            objects = self._filter_by_mask(objects, camera_id)
 
             if objects:
                 frames_with_objects.append({
@@ -165,6 +177,19 @@ class Orchestrator(object):
             obj["xmax"] += x_offset
             obj["ymin"] += y_offset
             obj["ymax"] += y_offset
+
+    def _filter_by_mask(self, objects, camera_id):
+        mask = self._masks.get(camera_id)
+        if mask is None:
+            return objects
+        mask_h, mask_w = mask.shape
+        filtered = []
+        for obj in objects:
+            cx = max(0, min((obj['xmin'] + obj['xmax']) // 2, mask_w - 1))
+            cy = max(0, min((obj['ymin'] + obj['ymax']) // 2, mask_h - 1))
+            if mask[cy, cx] == 255:
+                filtered.append(obj)
+        return filtered
 
     def _get_adjusted_objects_scores(self, frames_with_objects):  # noqa
         scores = {}
