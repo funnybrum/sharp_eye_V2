@@ -94,7 +94,9 @@ class SnapshotTracker(object):
                 "y": y,
                 "w": w,
                 "h": h
-            }
+            },
+            "non_zero_pixels": frame.non_zero_pixels,
+            "non_zero_percent": frame.non_zero_percent
         }
         return metadata
 
