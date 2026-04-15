@@ -149,6 +149,13 @@ def download_movie(filename):
     return send_file(movie_file, as_attachment=True)
 
 
+@server_webapp.route("/movie/download_metadata/<path:filename>", methods=["GET"])
+@requires_auth
+def download_metadata(filename):
+    metadata_file = safe_join(config['snapshots']['location'], filename[:-3] + "json")
+    return send_file(metadata_file, as_attachment=True)
+
+
 @server_webapp.route("/movie/play_all/<path:date>", methods=["GET"])
 @requires_auth
 def play_all(date):
