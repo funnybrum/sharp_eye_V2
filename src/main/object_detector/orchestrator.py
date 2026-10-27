@@ -6,6 +6,7 @@ from time import time
 import cv2
 
 from lib import config
+from lib import noise_filter
 from lib.log import log
 
 
@@ -19,7 +20,9 @@ class Orchestrator(object):
         self._metadata_store = metadata_store
         self._processors = processors
         self._confidence_threshold = config['object_detection']['confidence_threshold']
+        self._noise_filter_enabled = config['object_detection'].get('noise_filter', False)
         self._video_root = config['snapshots']['location']
+        self._noise_root = config['snapshots']['noise']
 
         self._masks = {}
         mask_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'resources', 'img')
@@ -42,6 +45,11 @@ class Orchestrator(object):
             except:
                 input_metadata = None
 
+            # Night noise clips are moved aside without object detection (processed as usual if the move fails).
+            if self._noise_filter_enabled and noise_filter.is_night_noise(video_file, input_metadata):
+                if self._move_to_noise(video_file):
+                    continue
+
             frames_with_objects = self._process_video_file(video_file, input_metadata)
             if frames_with_objects is None:
                 unprocessed_files += 1
@@ -54,6 +62,20 @@ class Orchestrator(object):
                     processor.process(video_file, scores, frames_with_objects)
 
         return unprocessed_files
+
+    def _move_to_noise(self, video_file):
+        """Move the video and its .json sidecar to the noise folder of its camera. Returns True on success."""
+        camera_id = os.path.basename(os.path.dirname(video_file))
+        noise_folder = os.path.join(self._noise_root, camera_id)
+        try:
+            os.makedirs(noise_folder, exist_ok=True)
+            for f in (video_file, video_file[:-3] + "json"):
+                os.replace(f, os.path.join(noise_folder, os.path.basename(f)))
+        except OSError as e:
+            log("Failed to move %s to %s: %s" % (video_file, noise_folder, repr(e)))
+            return False
+        log("Noise filter: moved %s to %s" % (video_file, noise_folder))
+        return True
 
     def _process_video_file(self, video_file, input_metadata):
         """

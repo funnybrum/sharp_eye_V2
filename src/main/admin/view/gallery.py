@@ -38,6 +38,8 @@ def get_gallery_items(camera_filter, object_filter):
     metadata = MetadataStore()
     all_movies = []
     for root, dirs, files in os.walk(config['snapshots']['location']):
+        # Don't show the clips moved aside as night noise.
+        dirs[:] = [d for d in dirs if os.path.join(root, d) != config['snapshots']['noise']]
         for video_filename in [os.path.join(root, f) for f in files if f.endswith("mp4")]:
             camera = os.path.split(os.path.dirname(video_filename))[-1]
             if camera_filter == 'all' or camera == camera_filter:

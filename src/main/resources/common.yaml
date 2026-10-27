@@ -51,3 +51,5 @@ snapshots:
     # /snapshots/camera3
     location: /snapshots
     metadata: /snapshots/metadata
+    # Night clips recognized as insect noise are moved here (one subfolder per camera). Not shown in the gallery.
+    noise: /snapshots/noise

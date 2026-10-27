@@ -10,6 +10,8 @@ object_detection:
   confidence_threshold: 0.5
   metadata_threshold: 0.25
   detection_count_threshold: 5
+  # Move night (IR) clips whose motion looks like insects to snapshots/noise, without running YOLO on them.
+  noise_filter: true
 
 notifications:
   objects:
